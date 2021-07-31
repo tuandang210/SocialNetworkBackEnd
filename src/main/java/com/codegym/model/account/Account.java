@@ -18,9 +18,9 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-//    @NotNull
+    //    @NotNull
     private String username;
-//    @Size(min = 6, max = 32)
+    //    @Size(min = 6, max = 32)
 //    @NotNull
     private String password;
     private String email;
@@ -32,6 +32,7 @@ public class Account {
     private String fullName;
     private String address;
     private String favorite;
+    private int isActive = 1;
 
     @Override
     public boolean equals(Object o) {
