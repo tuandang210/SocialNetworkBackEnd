@@ -8,15 +8,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
 @RestController
+@RequestMapping("/accounts")
 public class AccountController {
     @Autowired
     private IAccountService accountService;
 
-    @GetMapping("/account")
+    @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Iterable<Account>> getAll() {
         return new ResponseEntity<>(accountService.findAll(), HttpStatus.OK);
