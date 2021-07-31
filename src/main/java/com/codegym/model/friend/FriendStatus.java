@@ -20,6 +20,11 @@ public class FriendStatus {
     private Long id;
     private String status;
 
+    public FriendStatus(Long id, String status) {
+        this.id = id;
+        this.status = status;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -4,8 +4,12 @@ import com.codegym.configuration.custom.CustomAccessDeniedHandler;
 import com.codegym.configuration.custom.RestAuthenticationEntryPoint;
 import com.codegym.configuration.filter.JwtAuthenticationFilter;
 import com.codegym.model.account.Account;
+import com.codegym.model.account.Privacy;
 import com.codegym.model.account.Role;
+import com.codegym.model.friend.FriendStatus;
 import com.codegym.service.account.IAccountService;
+import com.codegym.service.friendStatus.IFriendStatusService;
+import com.codegym.service.privacy.IPrivacyService;
 import com.codegym.service.role.IRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -37,7 +41,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private IRoleService roleService;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private IFriendStatusService friendStatusService;
+
+    @Autowired
+    private IPrivacyService privacyService;
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
@@ -90,6 +97,37 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             admin.setBirthday("01/01/2022");
             admin.setRoles(roles);
             accountService.save(admin);
+        }
+       List<FriendStatus> friendStatuses = (List<FriendStatus>) friendStatusService.findAll();
+        if (friendStatuses.isEmpty()) {
+            FriendStatus status1 = new FriendStatus();
+            status1.setId(1L);
+            status1.setStatus("friend");
+            friendStatusService.save(status1);
+            FriendStatus status2 = new FriendStatus();
+            status2.setId(2L);
+            status2.setStatus("not-friend");
+            friendStatusService.save(status2);
+            FriendStatus status3 = new FriendStatus();
+            status3.setId(3L);
+            status3.setStatus("sent-request");
+            friendStatusService.save(status3);
+        }
+
+        List<Privacy> pries = (List<Privacy>) privacyService.findAll();
+        if (pries.isEmpty()){
+            Privacy privacy1 = new Privacy();
+            privacy1.setId(1L);
+            privacy1.setName("public");
+            privacyService.save(privacy1);
+            Privacy privacy2 = new Privacy();
+            privacy2.setId(2L);
+            privacy2.setName("friend-only");
+            privacyService.save(privacy2);
+            Privacy privacy3 = new Privacy();
+            privacy3.setId(3L);
+            privacy3.setName("only-me");
+            privacyService.save(privacy3);
         }
     }
 
