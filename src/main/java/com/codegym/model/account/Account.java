@@ -18,16 +18,16 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull
+//    @NotNull
     private String username;
-    @Size(min = 6, max = 32)
-    @NotNull
+//    @Size(min = 6, max = 32)
+//    @NotNull
     private String password;
     private String email;
     private String phone;
     private String birthday;
     @ManyToMany(fetch = FetchType.EAGER)
-    private Set<Roles> roles;
+    private Set<Role> roles;
     private String avatar;
     private String fullName;
     private String address;

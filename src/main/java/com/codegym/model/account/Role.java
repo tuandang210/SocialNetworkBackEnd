@@ -14,19 +14,25 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class Roles {
+public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
 
+
+    public Role(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Roles roles = (Roles) o;
+        Role role = (Role) o;
 
-        return Objects.equals(id, roles.id);
+        return Objects.equals(id, role.id);
     }
 
     @Override
