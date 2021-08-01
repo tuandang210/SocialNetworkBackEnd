@@ -32,7 +32,7 @@ public class Account {
     private String fullName;
     private String address;
     private String favorite;
-    private int isActive = 1;
+    private boolean active = true;
 
     @Override
     public boolean equals(Object o) {

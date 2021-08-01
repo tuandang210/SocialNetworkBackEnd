@@ -36,7 +36,7 @@ public class AccountService implements IAccountService {
             account.setAddress("");
         }
         if(account.getAvatar() == null){
-            account.setAvatar("https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png");
+            account.setAvatar("https://firebasestorage.googleapis.com/v0/b/social-network-d0202.appspot.com/o/sbcf-default-avatar.png?alt=media&token=900d125c-9b2d-47b1-9c86-bd646a1f53b8");
         }
         if(account.getFavorite() == null){
             account.setFavorite("");
@@ -61,5 +61,13 @@ public class AccountService implements IAccountService {
     @Override
     public Account findByUsername(String username) {
         return accountRepository.findByUsername(username);
+    }
+
+    @Override
+    public Account saveVer(Account account) {
+        if(account.getAvatar() == null){
+            account.setAvatar("https://firebasestorage.googleapis.com/v0/b/social-network-d0202.appspot.com/o/sbcf-default-avatar.png?alt=media&token=900d125c-9b2d-47b1-9c86-bd646a1f53b8");
+        }
+        return accountRepository.save(account);
     }
 }

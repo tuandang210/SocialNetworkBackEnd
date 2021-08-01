@@ -6,4 +6,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface IAccountService extends IGeneralService<Account>, UserDetailsService {
     Account findByUsername(String username);
+
+    Account saveVer(Account account);
 }
