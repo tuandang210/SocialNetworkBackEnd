@@ -69,6 +69,7 @@ public class AccountController {
         Set<Role> roleSet = new HashSet<>();
         roleSet.add(new Role(2L, "ROLE_USER"));
         account.setRoles(roleSet);
+
         Account saved = accountService.save(account);
         createDefaultRelation(saved);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
