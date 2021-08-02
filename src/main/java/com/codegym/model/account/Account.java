@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Objects;
@@ -18,11 +19,11 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    //    @NotNull
+    @NotEmpty
     private String username;
-    //    @Size(min = 6, max = 32)
-//    @NotNull
+    @NotEmpty
     private String password;
+    @NotEmpty
     private String email;
     private String phone;
     private String birthday;

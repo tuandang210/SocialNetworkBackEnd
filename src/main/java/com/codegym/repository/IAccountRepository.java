@@ -13,4 +13,8 @@ public interface IAccountRepository extends JpaRepository<Account, Long> {
 
     @Query(value = "select * from account join account_roles ar on account.id = ar.account_id group by account_id limit 2 offset ?1", nativeQuery = true)
     List<Account> PaginationAccount(int number);
+
+    boolean existsAccountByUsername(String username);
+
+    boolean existsAccountByEmail(String email);
 }

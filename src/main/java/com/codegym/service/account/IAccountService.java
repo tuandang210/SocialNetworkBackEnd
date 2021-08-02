@@ -13,4 +13,8 @@ public interface IAccountService extends IGeneralService<Account>, UserDetailsSe
 
     List<Account> PaginationAccount(int number);
 
+    boolean existsAccountByUsername(String username);
+
+    boolean existsAccountByEmail(String email);
+
 }

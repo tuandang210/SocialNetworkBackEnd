@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +44,13 @@ public class AccountController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Account> createNew(@RequestBody Account account) {
+    public ResponseEntity<?> createNew(@Valid @RequestBody Account account) {
+        if (accountService.existsAccountByUsername(account.getUsername())) {
+            return new ResponseEntity<>("This username already exists!", HttpStatus.BAD_REQUEST);
+        }
+        if (accountService.existsAccountByEmail(account.getEmail())) {
+            return new ResponseEntity<>("This email already exists!", HttpStatus.BAD_REQUEST);
+        }
         Set<Role> roleSet = new HashSet<>();
         roleSet.add(new Role(2L, "ROLE_USER"));
         account.setRoles(roleSet);

@@ -76,4 +76,14 @@ public class AccountService implements IAccountService {
     public List<Account> PaginationAccount(int number) {
         return accountRepository.PaginationAccount(number);
     }
+
+    @Override
+    public boolean existsAccountByUsername(String username) {
+        return accountRepository.existsAccountByUsername(username);
+    }
+
+    @Override
+    public boolean existsAccountByEmail(String email) {
+        return accountRepository.existsAccountByEmail(email);
+    }
 }
