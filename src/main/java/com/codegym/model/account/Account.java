@@ -34,6 +34,14 @@ public class Account {
     private String favorite;
     private boolean active = true;
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

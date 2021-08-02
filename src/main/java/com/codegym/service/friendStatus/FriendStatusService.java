@@ -1,6 +1,7 @@
 package com.codegym.service.friendStatus;
 
 
+import com.codegym.model.enumeration.EFriendStatus;
 import com.codegym.model.friend.FriendStatus;
 import com.codegym.repository.IFriendStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,5 +32,10 @@ public class FriendStatusService implements IFriendStatusService {
     @Override
     public void delete(Long id) {
         friendStatusRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<FriendStatus> findByStatus(EFriendStatus status) {
+        return friendStatusRepository.findByStatus(status);
     }
 }

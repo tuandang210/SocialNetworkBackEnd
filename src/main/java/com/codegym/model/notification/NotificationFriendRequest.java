@@ -1,6 +1,6 @@
 package com.codegym.model.notification;
 
-import com.codegym.model.friend.FriendCheck;
+import com.codegym.model.friend.AccountRelation;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -17,7 +17,7 @@ public class NotificationFriendRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    private FriendCheck friendCheck;
+    private AccountRelation accountRelation;
     private boolean isNew = false;
 
     @Override
