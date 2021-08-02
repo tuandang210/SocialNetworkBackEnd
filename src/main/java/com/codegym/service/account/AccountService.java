@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,16 +33,16 @@ public class AccountService implements IAccountService {
     @Override
     public Account save(Account account) {
         account.setPassword(passwordEncoder.encode(account.getPassword()));
-        if(account.getAddress() == null){
+        if (account.getAddress() == null) {
             account.setAddress("");
         }
-        if(account.getAvatar() == null){
+        if (account.getAvatar() == null) {
             account.setAvatar("https://firebasestorage.googleapis.com/v0/b/social-network-d0202.appspot.com/o/sbcf-default-avatar.png?alt=media&token=900d125c-9b2d-47b1-9c86-bd646a1f53b8");
         }
-        if(account.getFavorite() == null){
+        if (account.getFavorite() == null) {
             account.setFavorite("");
         }
-        if(account.getFullName() == null){
+        if (account.getFullName() == null) {
             account.setFullName("");
         }
         return accountRepository.save(account);
@@ -65,9 +66,14 @@ public class AccountService implements IAccountService {
 
     @Override
     public Account saveVer(Account account) {
-        if(account.getAvatar() == null){
+        if (account.getAvatar() == null) {
             account.setAvatar("https://firebasestorage.googleapis.com/v0/b/social-network-d0202.appspot.com/o/sbcf-default-avatar.png?alt=media&token=900d125c-9b2d-47b1-9c86-bd646a1f53b8");
         }
         return accountRepository.save(account);
+    }
+
+    @Override
+    public List<Account> PaginationAccount(int number) {
+        return accountRepository.PaginationAccount(number);
     }
 }

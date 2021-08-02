@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -44,7 +45,7 @@ public class AccountController {
     @PostMapping("/register")
     public ResponseEntity<Account> createNew(@RequestBody Account account) {
         Set<Role> roleSet = new HashSet<>();
-        roleSet.add(new Role(2L,"ROLE_USER"));
+        roleSet.add(new Role(2L, "ROLE_USER"));
         account.setRoles(roleSet);
         return new ResponseEntity<>(accountService.save(account), HttpStatus.CREATED);
     }
@@ -61,19 +62,17 @@ public class AccountController {
         return new ResponseEntity<>(accountService.saveVer(account1), HttpStatus.OK);
     }
 
-    @PutMapping("/admin/{id}")
+    @GetMapping("/admin/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Account> blockAccount(@RequestBody Account account) {
-        Account account2 = accountService.findById(account.getId()).get();
-        account2.setUsername(account.getUsername());
-        account2.setPassword(account.getPassword());
-        account2.setEmail(account.getEmail());
-        account2.setBirthday(account.getBirthday());
-        account2.setFullName(account.getFullName());
-        account2.setAddress(account.getAddress());
-        account2.setPhone(account.getPhone());
-        account2.setFavorite(account.getFavorite());
-        account2.setAvatar(account.getAvatar());
-        return new ResponseEntity<>(accountService.save(account), HttpStatus.OK);
+    public ResponseEntity<Account> blockAccount(@PathVariable Long id) {
+        Account account = accountService.findById(id).get();
+        account.setActive(false);
+        return new ResponseEntity<>(accountService.saveVer(account), HttpStatus.OK);
+    }
+
+    @GetMapping("/page/{offset}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Account>> pagination(@PathVariable int offset) {
+        return new ResponseEntity<>(accountService.PaginationAccount(offset), HttpStatus.OK);
     }
 }

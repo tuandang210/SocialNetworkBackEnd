@@ -10,14 +10,34 @@ public class JwtResponse {
     private String type = "Bearer";
     private String username;
     private String fullName;
+    private boolean active;
+    private String avatar;
     private final Collection<? extends GrantedAuthority> roles;
 
-    public JwtResponse(String accessToken, Long id, String username, String fullName, Collection<? extends GrantedAuthority> roles) {
+    public JwtResponse(String accessToken, Long id, String username, String fullName, boolean active, String avatar, Collection<? extends GrantedAuthority> roles) {
         this.token = accessToken;
         this.username = username;
         this.fullName = fullName;
         this.roles = roles;
         this.id = id;
+        this.active = active;
+        this.avatar = avatar;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public Long getId() {
