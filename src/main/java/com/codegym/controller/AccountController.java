@@ -2,7 +2,13 @@ package com.codegym.controller;
 
 import com.codegym.model.account.Account;
 import com.codegym.model.account.Role;
+import com.codegym.model.enumeration.EFriendStatus;
+import com.codegym.model.friend.AccountRelation;
+import com.codegym.model.friend.FriendStatus;
 import com.codegym.service.account.IAccountService;
+import com.codegym.service.accountRelation.IAccountRelationService;
+import com.codegym.service.friendStatus.IFriendStatusService;
+import com.codegym.service.role.IRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +26,15 @@ import java.util.Set;
 public class AccountController {
     @Autowired
     private IAccountService accountService;
+
+    @Autowired
+    private IRoleService roleService;
+
+    @Autowired
+    private IFriendStatusService friendStatusService;
+
+    @Autowired
+    private IAccountRelationService accountRelationService;
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -47,7 +62,9 @@ public class AccountController {
         Set<Role> roleSet = new HashSet<>();
         roleSet.add(new Role(2L, "ROLE_USER"));
         account.setRoles(roleSet);
-        return new ResponseEntity<>(accountService.save(account), HttpStatus.CREATED);
+        Account saved = accountService.save(account);
+        createDefaultRelation(saved);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -74,5 +91,18 @@ public class AccountController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Account>> pagination(@PathVariable int offset) {
         return new ResponseEntity<>(accountService.PaginationAccount(offset), HttpStatus.OK);
+    }
+
+    private void createDefaultRelation(Account account){
+        Iterable<Account> accounts = accountService.findAll();
+
+        Role roleUser = new Role(2L, "ROLE_USER");
+        FriendStatus guestRelation = friendStatusService.findByStatus(EFriendStatus.GUEST).get();
+
+        for (Account existedAccount: accounts) {
+            if (!existedAccount.equals(account) && existedAccount.getRoles().contains(roleUser)) {
+                accountRelationService.save(new AccountRelation(existedAccount, account, guestRelation));
+            }
+        }
     }
 }
