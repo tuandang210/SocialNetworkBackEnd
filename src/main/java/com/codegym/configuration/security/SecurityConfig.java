@@ -6,6 +6,7 @@ import com.codegym.configuration.filter.JwtAuthenticationFilter;
 import com.codegym.model.account.Account;
 import com.codegym.model.account.Privacy;
 import com.codegym.model.account.Role;
+import com.codegym.model.enumeration.EFriendStatus;
 import com.codegym.model.friend.FriendStatus;
 import com.codegym.service.account.IAccountService;
 import com.codegym.service.friendStatus.IFriendStatusService;
@@ -102,15 +103,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         if (friendStatuses.isEmpty()) {
             FriendStatus status1 = new FriendStatus();
             status1.setId(1L);
-            status1.setStatus("friend");
+            status1.setStatus(EFriendStatus.FRIEND);
             friendStatusService.save(status1);
             FriendStatus status2 = new FriendStatus();
             status2.setId(2L);
-            status2.setStatus("not-friend");
+            status2.setStatus(EFriendStatus.PENDING);
             friendStatusService.save(status2);
             FriendStatus status3 = new FriendStatus();
             status3.setId(3L);
-            status3.setStatus("sent-request");
+            status3.setStatus(EFriendStatus.GUEST);
             friendStatusService.save(status3);
         }
 
