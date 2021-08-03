@@ -49,4 +49,8 @@ public class StatusController {
         statusService.delete(id);
         return new ResponseEntity<>(statusOptional.get(),HttpStatus.NO_CONTENT);
     }
+    @GetMapping("/account/{id}")
+    public ResponseEntity<Iterable<Status>> getStatusByAccountId(@PathVariable Long id){
+        return new ResponseEntity<>(statusService.findAllByAccountId(id),HttpStatus.OK);
+    }
 }
