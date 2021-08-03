@@ -70,13 +70,25 @@ public class AccountRelationService implements IAccountRelationService{
     }
 
     @Override
-    public Iterable<AccountRelation> findAllBySenderIdAndStatus(Long id1, EFriendStatus status) {
-        return null;
+    public Iterable<Account> findAllFriendRequestSender(Long id) {
+        Iterable<AccountRelation> pending = accountRelationRepository.findAllByAccount2_IdAndFriendStatus_Status(id, EFriendStatus.PENDING);
+        List<Account> senders = new ArrayList<>();
+
+        for (AccountRelation relation: pending) {
+            senders.add(relation.getAccount1());
+        }
+        return senders;
     }
 
     @Override
-    public Iterable<AccountRelation> findAllByReceiverIdAndStatus(Long id2, EFriendStatus status) {
-        return null;
+    public Iterable<Account> findAllFriendRequestReceiver(Long id) {
+        Iterable<AccountRelation> pending = accountRelationRepository.findAllByAccount1_IdAndFriendStatus_Status(id, EFriendStatus.PENDING);
+        List<Account> receivers = new ArrayList<>();
+
+        for (AccountRelation relation: pending) {
+            receivers.add(relation.getAccount2());
+        }
+        return receivers;
     }
 
     @Override

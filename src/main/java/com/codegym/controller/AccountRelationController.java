@@ -1,6 +1,7 @@
 package com.codegym.controller;
 
 import com.codegym.model.account.Account;
+import com.codegym.model.dto.ResponseMessage;
 import com.codegym.model.enumeration.EFriendStatus;
 import com.codegym.model.friend.AccountRelation;
 import com.codegym.model.friend.FriendStatus;
@@ -51,7 +52,7 @@ public class AccountRelationController {
     }
 
 
-    @GetMapping("/{id}/friends")
+    @GetMapping("/friends/{id}")
     public ResponseEntity<Iterable<Account>> findFriendsOfAnAccount(@PathVariable("id") Long id) {
         if (!accountService.existsAccountById(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -79,18 +80,32 @@ public class AccountRelationController {
         return new ResponseEntity<>(mutualFriends, HttpStatus.OK);
     }
 
-
-    @GetMapping("/{id}/pending")
-    public ResponseEntity<Iterable<Account>> findPendingRequestOfAnAccount(@PathVariable("id") Long id) {
+    // Tìm danh sách lời mời kết bạn mình đã gửi
+    @GetMapping("/{id}/sent")
+    public ResponseEntity<Iterable<Account>> findFriendRequestSentByAccountId(@PathVariable("id") Long id) {
         if (!accountService.existsAccountById(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Iterable<Account> pending = accountRelationService.findAllByAccountIdAndStatus(id, EFriendStatus.PENDING);
-        if (!pending.iterator().hasNext()) {
+        Iterable<Account> sent = accountRelationService.findAllFriendRequestReceiver(id);
+        if (!sent.iterator().hasNext()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(pending, HttpStatus.OK);
+        return new ResponseEntity<>(sent, HttpStatus.OK);
+    }
+
+    //Tìm danh sách lời mời kết bạn mình đã nhận
+    @GetMapping("/{id}/received")
+    public ResponseEntity<Iterable<Account>> findFriendRequestReceivedByAccountId(@PathVariable("id") Long id) {
+        if (!accountService.existsAccountById(id)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Iterable<Account> received = accountRelationService.findAllFriendRequestSender(id);
+        if (!received.iterator().hasNext()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(received, HttpStatus.OK);
     }
 
 
@@ -107,11 +122,13 @@ public class AccountRelationController {
         return new ResponseEntity<>(guests, HttpStatus.OK);
     }
 
+    // Tìm danh sách n
 
+    // Tìm mối quan hệ của 2 tài khoản
     @GetMapping("/{id1}/{id2}")
     public ResponseEntity<AccountRelation> findEachRelation(@PathVariable("id1") Long id1,
                                                             @PathVariable("id2") Long id2) {
-        if (!accountService.existsAccountById(id1) | !accountService.existsAccountById(id2)) {
+        if (id1 == id2 | !accountService.existsAccountById(id1) | !accountService.existsAccountById(id2)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -123,6 +140,7 @@ public class AccountRelationController {
     }
 
 
+    // Lưu quan hệ chung (không sửa)
     @PostMapping
     public ResponseEntity<AccountRelation> saveNewRelation(@RequestBody AccountRelation relation) {
         Long id1 = relation.getAccount1().getId();
@@ -137,47 +155,73 @@ public class AccountRelationController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-
-    @PutMapping("/{id1}/sendRequest/{id2}")
-    public ResponseEntity<AccountRelation> sendFriendRequest(
+    //Gửi lời mời kết bạn (không sửa)
+    @PutMapping("/{id1}/request/{id2}")
+    public ResponseEntity<?> sendFriendRequest(
             @PathVariable("id1") Long id1,
             @PathVariable("id2") Long id2
     ) {
         if (!accountService.existsAccountById(id1) | !accountService.existsAccountById(id2) ){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else if (id1 == id2) {
+            return new ResponseEntity<>(new ResponseMessage("Duplicated accounts"), HttpStatus.BAD_REQUEST);
         }
+        Account sender = accountService.findById(id1).get();
+        Account receiver = accountService.findById(id2).get();
 
         AccountRelation relation = accountRelationService.findByTwoAccountIds(id1, id2).get();
         if (relation == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if (!relation.getFriendStatus().getStatus().equals(EFriendStatus.GUEST)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        EFriendStatus currentStatus = relation.getFriendStatus().getStatus();
+        if (currentStatus.equals(EFriendStatus.FRIEND)) {
+            return new ResponseEntity<>(new ResponseMessage("Already friends"), HttpStatus.BAD_REQUEST);
+        }
+        if (currentStatus.equals(EFriendStatus.PENDING)) {
+            if (relation.getAccount1().equals(sender)) {
+                return new ResponseEntity<>(new ResponseMessage("Already sent a friend request"), HttpStatus.BAD_REQUEST);
+            } else {
+                return new ResponseEntity<>(new ResponseMessage("Unaccepted friend request"), HttpStatus.BAD_REQUEST);
+            }
         }
 
         FriendStatus pending = friendStatusService.findByStatus(EFriendStatus.PENDING).get();
-        relation.setAccount1(accountService.findById(id1).get());
-        relation.setAccount2(accountService.findById(id2).get());
+        relation.setAccount1(sender);
+        relation.setAccount2(receiver);
         relation.setFriendStatus(pending);
         return new ResponseEntity<>(accountRelationService.save(relation), HttpStatus.OK);
     }
 
 
-    @PutMapping("/{id1}/acceptRequest/{id2}")
-    public ResponseEntity<AccountRelation> acceptFriendRequest(
+    //Chấp nhận lời mời kết bạn
+    @PutMapping("/{id1}/accept/{id2}")
+    public ResponseEntity<?> acceptFriendRequest(
             @PathVariable("id1") Long id1,
             @PathVariable("id2") Long id2
     ) {
         if (!accountService.existsAccountById(id1) | !accountService.existsAccountById(id2) ){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else if (id1 == id2) {
+            return new ResponseEntity<>(new ResponseMessage("Duplicated accounts"), HttpStatus.BAD_REQUEST);
         }
+        Account receiver = accountService.findById(id1).get();
+        Account sender = accountService.findById(id2).get();
 
         AccountRelation relation = accountRelationService.findByTwoAccountIds(id1, id2).get();
         if (relation == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if (!relation.getFriendStatus().getStatus().equals(EFriendStatus.PENDING)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        EFriendStatus currentStatus = relation.getFriendStatus().getStatus();
+        if (currentStatus.equals(EFriendStatus.FRIEND)) {
+            return new ResponseEntity<>(new ResponseMessage("Already friends"), HttpStatus.BAD_REQUEST);
+        }
+        if (currentStatus.equals(EFriendStatus.GUEST)) {
+            return new ResponseEntity<>(new ResponseMessage("Unsent friend request"), HttpStatus.BAD_REQUEST);
+        }
+        if (relation.getAccount1().equals(receiver)) {
+            return new ResponseEntity<>(new ResponseMessage("Sent an unaccepted friend request"), HttpStatus.BAD_REQUEST);
         }
 
         FriendStatus friend = friendStatusService.findByStatus(EFriendStatus.FRIEND).get();
@@ -186,21 +230,35 @@ public class AccountRelationController {
     }
 
 
-    @PutMapping("/{id1}/deleteRequest/{id2}")
-    public ResponseEntity<AccountRelation> deleteFriendRequest(
+    //Người gửi hủy lời mời kết bạn
+    @PutMapping("/{id1}/cancel/{id2}")
+    public ResponseEntity<?> deleteFriendRequest(
             @PathVariable("id1") Long id1,
             @PathVariable("id2") Long id2
     ) {
         if (!accountService.existsAccountById(id1) | !accountService.existsAccountById(id2) ){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else if (id1 == id2) {
+            return new ResponseEntity<>(new ResponseMessage("Duplicated accounts"), HttpStatus.BAD_REQUEST);
         }
+        Account sender = accountService.findById(id1).get();
+        Account receiver = accountService.findById(id2).get();
 
         AccountRelation relation = accountRelationService.findByTwoAccountIds(id1, id2).get();
         if (relation == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if (!relation.getFriendStatus().getStatus().equals(EFriendStatus.PENDING)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        EFriendStatus currentStatus = relation.getFriendStatus().getStatus();
+        if (currentStatus.equals(EFriendStatus.FRIEND)) {
+            return new ResponseEntity<>(new ResponseMessage("Already friends"), HttpStatus.BAD_REQUEST);
+        }
+        if (currentStatus.equals(EFriendStatus.GUEST)) {
+            return new ResponseEntity<>(new ResponseMessage("Unsent friend request"), HttpStatus.BAD_REQUEST);
+        }
+
+        if (relation.getAccount1().equals(receiver)) {
+            return new ResponseEntity<>(new ResponseMessage("Do not own this friend request"), HttpStatus.BAD_REQUEST);
         }
 
         FriendStatus guest = friendStatusService.findByStatus(EFriendStatus.GUEST).get();
@@ -209,21 +267,61 @@ public class AccountRelationController {
     }
 
 
-    @PutMapping("/{id1}/unfriend/{id2}")
-    public ResponseEntity<AccountRelation> unfriend(
+    //Người nhận từ chối lời mời kết bạn
+    @PutMapping("{id1}/decline/{id2}")
+    public ResponseEntity<?> declineFriendRequest(
             @PathVariable("id1") Long id1,
             @PathVariable("id2") Long id2
     ) {
         if (!accountService.existsAccountById(id1) | !accountService.existsAccountById(id2) ){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else if (id1 == id2) {
+            return new ResponseEntity<>(new ResponseMessage("Duplicated accounts"), HttpStatus.BAD_REQUEST);
+        }
+
+        Account receiver = accountService.findById(id1).get();
+        Account sender = accountService.findById(id2).get();
+        AccountRelation relation = accountRelationService.findByTwoAccountIds(id1, id2).get();
+        if (relation == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        EFriendStatus currentStatus = relation.getFriendStatus().getStatus();
+        if (currentStatus.equals(EFriendStatus.FRIEND)) {
+            return new ResponseEntity<>(new ResponseMessage("Already friends"), HttpStatus.BAD_REQUEST);
+        }
+        if (currentStatus.equals(EFriendStatus.GUEST)) {
+            return new ResponseEntity<>(new ResponseMessage("Unsent friend request"), HttpStatus.BAD_REQUEST);
+        }
+        if (relation.getAccount1().equals(receiver)) {
+            return new ResponseEntity<>(new ResponseMessage("Cannot decline owned friend request"), HttpStatus.BAD_REQUEST);
+        }
+        FriendStatus guest = friendStatusService.findByStatus(EFriendStatus.GUEST).get();
+        relation.setFriendStatus(guest);
+        return new ResponseEntity<>(accountRelationService.save(relation), HttpStatus.OK);
+    }
+
+
+    //Người gửi unfriend người kia
+    @PutMapping("/{id1}/unfriend/{id2}")
+    public ResponseEntity<?> unfriend(
+            @PathVariable("id1") Long id1,
+            @PathVariable("id2") Long id2
+    ) {
+        if (!accountService.existsAccountById(id1) | !accountService.existsAccountById(id2) ){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else if (id1 == id2) {
+            return new ResponseEntity<>(new ResponseMessage("Duplicated accounts"), HttpStatus.BAD_REQUEST);
         }
 
         AccountRelation relation = accountRelationService.findByTwoAccountIds(id1, id2).get();
         if (relation == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if (!relation.getFriendStatus().getStatus().equals(EFriendStatus.FRIEND)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        EFriendStatus currentStatus = relation.getFriendStatus().getStatus();
+        if (!currentStatus.equals(EFriendStatus.FRIEND)) {
+            return new ResponseEntity<>(new ResponseMessage("Not friends"), HttpStatus.BAD_REQUEST);
         }
 
         FriendStatus guest = friendStatusService.findByStatus(EFriendStatus.GUEST).get();
