@@ -3,6 +3,7 @@ package com.codegym.controller;
 import com.codegym.model.account.Account;
 import com.codegym.model.account.Role;
 import com.codegym.service.account.IAccountService;
+import com.codegym.service.accountRelation.IAccountRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,6 @@ import java.util.Set;
 public class AccountController {
     @Autowired
     private IAccountService accountService;
-
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Iterable<Account>> getAll() {
