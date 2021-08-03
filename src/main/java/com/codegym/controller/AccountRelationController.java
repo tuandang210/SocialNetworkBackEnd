@@ -51,7 +51,7 @@ public class AccountRelationController {
     }
 
 
-    @GetMapping("/{id}/friends")
+    @GetMapping("/friends/{id}")
     public ResponseEntity<Iterable<Account>> findFriendsOfAnAccount(@PathVariable("id") Long id) {
         if (!accountService.existsAccountById(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
