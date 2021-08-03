@@ -86,4 +86,11 @@ public class AccountService implements IAccountService {
     public boolean existsAccountByEmail(String email) {
         return accountRepository.existsAccountByEmail(email);
     }
+
+    @Override
+    public boolean existsAccountById(Long id) {
+        return accountRepository.existsAccountById(id);
+    }
+
+
 }

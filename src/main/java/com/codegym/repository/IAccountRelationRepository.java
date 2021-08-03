@@ -14,5 +14,9 @@ public interface IAccountRelationRepository extends JpaRepository<AccountRelatio
 
     Iterable<AccountRelation> findAllByAccount1_IdOrAccount2_Id(Long id1, Long id2);
 
-//    Iterable<AccountRelation> findAllByAccount1_IdOrAccount2_IdA(EFriendStatus status, Long id1, Long id2);
+    Iterable<AccountRelation> findAllByAccount1_IdAndFriendStatus_Status(Long id1, EFriendStatus status);
+
+    Iterable<AccountRelation> findAllByAccount2_IdAndFriendStatus_Status(Long id2, EFriendStatus status);
+
+    Iterable<AccountRelation>findAllByAccount1_IdAndAccount2_IdAndFriendStatus_Status(Long id1, Long id2, EFriendStatus status);
 }
