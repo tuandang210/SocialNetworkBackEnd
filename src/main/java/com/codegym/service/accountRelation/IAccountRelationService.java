@@ -13,4 +13,10 @@ public interface IAccountRelationService extends IGeneralService<AccountRelation
     Iterable<AccountRelation> findAllByAccountId(Long id);
 
     Iterable<Account> findAllByAccountIdAndStatus(Long id, EFriendStatus status);
+
+    Iterable<AccountRelation> findAllBySenderIdAndStatus(Long id1, EFriendStatus status);
+
+    Iterable<AccountRelation> findAllByReceiverIdAndStatus(Long id2, EFriendStatus status);
+
+    Iterable<Account> findMutualFriends(Long id1, Long id2);
 }

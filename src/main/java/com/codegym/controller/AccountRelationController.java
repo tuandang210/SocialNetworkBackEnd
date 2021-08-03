@@ -39,7 +39,7 @@ public class AccountRelationController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Iterable<AccountRelation>> findAllByAccountId(@PathVariable("id") Long id) {
-        if (!checkAccountIsExistedById(id)) {
+        if (!accountService.existsAccountById(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -53,7 +53,7 @@ public class AccountRelationController {
 
     @GetMapping("/{id}/friends")
     public ResponseEntity<Iterable<Account>> findFriendsOfAnAccount(@PathVariable("id") Long id) {
-        if (!checkAccountIsExistedById(id)) {
+        if (!accountService.existsAccountById(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -65,9 +65,24 @@ public class AccountRelationController {
     }
 
 
+    @GetMapping("/{id1}/{id2}/friends")
+    public ResponseEntity<Iterable<Account>> findMutualFriends(@PathVariable("id1") Long id1,
+                                                               @PathVariable("id2") Long id2) {
+        if (!accountService.existsAccountById(id1) && !accountService.existsAccountById(id2)) {
+            return
+                    new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Iterable<Account> mutualFriends = accountRelationService.findMutualFriends(id1, id2);
+        if (!mutualFriends.iterator().hasNext()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(mutualFriends, HttpStatus.OK);
+    }
+
+
     @GetMapping("/{id}/pending")
     public ResponseEntity<Iterable<Account>> findPendingRequestOfAnAccount(@PathVariable("id") Long id) {
-        if (!checkAccountIsExistedById(id)) {
+        if (!accountService.existsAccountById(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -81,7 +96,7 @@ public class AccountRelationController {
 
     @GetMapping("/{id}/guests")
     public ResponseEntity<Iterable<Account>> findGuestsOfAnAccount(@PathVariable("id") Long id) {
-        if (!checkAccountIsExistedById(id)) {
+        if (!accountService.existsAccountById(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -96,7 +111,7 @@ public class AccountRelationController {
     @GetMapping("/{id1}/{id2}")
     public ResponseEntity<AccountRelation> findEachRelation(@PathVariable("id1") Long id1,
                                                             @PathVariable("id2") Long id2) {
-        if (!checkAccountIsExistedById(id1) | !checkAccountIsExistedById(id2)) {
+        if (!accountService.existsAccountById(id1) | !accountService.existsAccountById(id2)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -113,9 +128,11 @@ public class AccountRelationController {
         Long id1 = relation.getAccount1().getId();
         Long id2 = relation.getAccount2().getId();
 
-        if (checkAccountIsExistedById(id1) && checkAccountIsExistedById(id2) && !checkRelationPairIsExisted(relation)) {
+        if (accountService.existsAccountById(id1) &&
+                accountService.existsAccountById(id2) &&
+                !checkRelationPairIsExisted(relation)) {
             accountRelationService.save(relation);
-            return new ResponseEntity<>(relation, HttpStatus.OK);
+            return new ResponseEntity<>(relation, HttpStatus.CREATED);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
@@ -126,7 +143,7 @@ public class AccountRelationController {
             @PathVariable("id1") Long id1,
             @PathVariable("id2") Long id2
     ) {
-        if (!checkAccountIsExistedById(id1) | !checkAccountIsExistedById(id2) ){
+        if (!accountService.existsAccountById(id1) | !accountService.existsAccountById(id2) ){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -139,6 +156,8 @@ public class AccountRelationController {
         }
 
         FriendStatus pending = friendStatusService.findByStatus(EFriendStatus.PENDING).get();
+        relation.setAccount1(accountService.findById(id1).get());
+        relation.setAccount2(accountService.findById(id2).get());
         relation.setFriendStatus(pending);
         return new ResponseEntity<>(accountRelationService.save(relation), HttpStatus.OK);
     }
@@ -149,7 +168,7 @@ public class AccountRelationController {
             @PathVariable("id1") Long id1,
             @PathVariable("id2") Long id2
     ) {
-        if (!checkAccountIsExistedById(id1) | !checkAccountIsExistedById(id2) ){
+        if (!accountService.existsAccountById(id1) | !accountService.existsAccountById(id2) ){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -172,7 +191,7 @@ public class AccountRelationController {
             @PathVariable("id1") Long id1,
             @PathVariable("id2") Long id2
     ) {
-        if (!checkAccountIsExistedById(id1) | !checkAccountIsExistedById(id2) ){
+        if (!accountService.existsAccountById(id1) | !accountService.existsAccountById(id2) ){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -195,7 +214,7 @@ public class AccountRelationController {
             @PathVariable("id1") Long id1,
             @PathVariable("id2") Long id2
     ) {
-        if (!checkAccountIsExistedById(id1) | !checkAccountIsExistedById(id2) ){
+        if (!accountService.existsAccountById(id1) | !accountService.existsAccountById(id2) ){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -217,19 +236,11 @@ public class AccountRelationController {
     private boolean checkRelationPairIsExisted(AccountRelation relation) {
         Long id1 = relation.getAccount1().getId();
         Long id2 = relation.getAccount2().getId();
-        if (checkAccountIsExistedById(id1) && checkAccountIsExistedById(id2)) {
+        if (accountService.existsAccountById(id1) && accountService.existsAccountById(id2)) {
             Optional<AccountRelation> accountRelation = accountRelationService.findByTwoAccountIds(id1, id2);
             if(accountRelation.isPresent()){
                 return true;
             }
-        }
-        return false;
-    }
-
-    private boolean checkAccountIsExistedById(Long id) {
-        Optional<Account> accountOptional = accountService.findById(id);
-        if (accountOptional.isPresent()){
-            return true;
         }
         return false;
     }

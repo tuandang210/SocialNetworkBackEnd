@@ -68,4 +68,30 @@ public class AccountRelationService implements IAccountRelationService{
         }
         return statusAccounts;
     }
+
+    @Override
+    public Iterable<AccountRelation> findAllBySenderIdAndStatus(Long id1, EFriendStatus status) {
+        return null;
+    }
+
+    @Override
+    public Iterable<AccountRelation> findAllByReceiverIdAndStatus(Long id2, EFriendStatus status) {
+        return null;
+    }
+
+    @Override
+    public Iterable<Account> findMutualFriends(Long id1, Long id2) {
+        Iterable<Account> friendList1 = findAllByAccountIdAndStatus(id1, EFriendStatus.FRIEND);
+        Iterable<Account> friendList2 = findAllByAccountIdAndStatus(id2, EFriendStatus.FRIEND);
+        List<Account> mutualFriends = new ArrayList<>();
+
+        for (Account friend1: friendList1) {
+            for (Account friend2: friendList2) {
+                if (friend1.equals(friend2)) {
+                    mutualFriends.add(friend1);
+                }
+            }
+        }
+        return mutualFriends;
+    }
 }
