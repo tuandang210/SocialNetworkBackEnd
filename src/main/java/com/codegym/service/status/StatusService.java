@@ -43,8 +43,15 @@ public class StatusService implements IStatusService{
 
 
     @Override
-    public Iterable<Status> findAllPublicStatus() {
-        return statusRepository.findAllByPrivacy_NameOrderByPostedTimeDesc("public");
+    public Iterable<Status> findAllPublicStatus(Long id) {
+        Iterable<Status> allPublicStatus =  statusRepository.findAllByPrivacy_NameOrderByPostedTimeDesc("public");
+        List<Status> guestPublicStatus = new ArrayList<>();
+        for (Status s: allPublicStatus) {
+            if (s.getAccount().getId() != id){
+                guestPublicStatus.add(s);
+            }
+        }
+        return guestPublicStatus;
     }
 
     @Override
@@ -64,13 +71,27 @@ public class StatusService implements IStatusService{
         return friendStatuses;
     }
 
-    public Iterable<Status> findALlStatusInNewsFeed(Long id) {
+    @Override
+    public Iterable<Status> findAllNonPrivateStatusByMyself(Long id) {
+        List<Status> nonPrivateStatus = new ArrayList<>();
+
+        List<Status> publics = (List<Status>) statusRepository.findAllByPrivacy_NameAndAccount_IdOrderByPostedTimeDesc("public", id);
+        List<Status> friend_only = (List<Status>) statusRepository.findAllByPrivacy_NameAndAccount_IdOrderByPostedTimeDesc("friend-only", id);
+
+        nonPrivateStatus.addAll(publics);
+        nonPrivateStatus.addAll(friend_only);
+        return nonPrivateStatus;
+    }
+
+    public Iterable<Status> findAllStatusInNewsFeed(Long id) {
         List<Status> newsFeed = new ArrayList<>();
 
-        List<Status> publicStatus = (List<Status>) findAllPublicStatus();
+        List<Status> publicStatus = (List<Status>) findAllPublicStatus(id);
         List<Status> friendStatus = (List<Status>) findAllFriendStatus(id);
+        List<Status> nonPrivateOwnStatus = (List<Status>) findAllNonPrivateStatusByMyself(id);
         newsFeed.addAll(publicStatus);
         newsFeed.addAll(friendStatus);
+        newsFeed.addAll(nonPrivateOwnStatus);
 
         Collections.sort(newsFeed, (status1, status2) -> (-1)*Long.valueOf(status1.getPostedTime().getTime()).compareTo(status2.getPostedTime().getTime()));
         return newsFeed;

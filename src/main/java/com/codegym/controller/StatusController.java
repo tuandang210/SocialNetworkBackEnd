@@ -56,9 +56,9 @@ public class StatusController {
     }
 
 
-    @GetMapping("/public")
-    public ResponseEntity<Iterable<Status>> getAllPublicStatus() {
-        Iterable<Status> statuses = statusService.findAllPublicStatus();
+    @GetMapping("/public/{id}")
+    public ResponseEntity<Iterable<Status>> getAllPublicStatus(@PathVariable("id") Long id) {
+        Iterable<Status> statuses = statusService.findAllPublicStatus(id);
         if (!statuses.iterator().hasNext()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -77,7 +77,7 @@ public class StatusController {
 
     @GetMapping("/newsfeed/{id}")
     public ResponseEntity<Iterable<Status>> getNewsFeed(@PathVariable("id") Long id) {
-        Iterable<Status> newsFeed = statusService.findALlStatusInNewsFeed(id);
+        Iterable<Status> newsFeed = statusService.findAllStatusInNewsFeed(id);
         if (!newsFeed.iterator().hasNext()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

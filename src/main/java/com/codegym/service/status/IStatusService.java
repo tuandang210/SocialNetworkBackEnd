@@ -8,11 +8,13 @@ import org.springframework.stereotype.Service;
 @Service
 public interface IStatusService extends IGeneralService<Status> {
 
-    Iterable<Status> findAllPublicStatus();
+    Iterable<Status> findAllPublicStatus(Long id);
 
     Iterable<Status> findAllFriendStatus(Long id);
 
-    Iterable<Status> findALlStatusInNewsFeed(Long id);
+    Iterable<Status> findAllNonPrivateStatusByMyself(Long id);
+
+    Iterable<Status> findAllStatusInNewsFeed(Long id);
 
     Iterable<Status> findAllByAccountId(Long id);
 }
