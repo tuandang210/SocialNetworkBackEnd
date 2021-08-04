@@ -78,6 +78,6 @@ public class StatusService implements IStatusService{
 
     @Override
     public Iterable<Status> findAllByAccountId(Long id) {
-        return null;
+        return statusRepository.findAllByAccountId(id);
     }
 }
