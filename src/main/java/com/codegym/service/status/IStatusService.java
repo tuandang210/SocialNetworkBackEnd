@@ -13,4 +13,6 @@ public interface IStatusService extends IGeneralService<Status> {
     Iterable<Status> findAllFriendStatus(Long id);
 
     Iterable<Status> findALlStatusInNewsFeed(Long id);
+
+    Iterable<Status> findAllByAccountId(Long id);
 }

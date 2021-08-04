@@ -75,4 +75,9 @@ public class StatusService implements IStatusService{
         Collections.sort(newsFeed, (status1, status2) -> (-1)*Long.valueOf(status1.getPostedTime().getTime()).compareTo(status2.getPostedTime().getTime()));
         return newsFeed;
     }
+
+    @Override
+    public Iterable<Status> findAllByAccountId(Long id) {
+        return null;
+    }
 }

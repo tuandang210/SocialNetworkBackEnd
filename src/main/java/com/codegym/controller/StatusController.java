@@ -83,8 +83,9 @@ public class StatusController {
         }
         return new ResponseEntity<>(newsFeed, HttpStatus.OK);
     }
+
     @GetMapping("/account/{id}")
-    public ResponseEntity<Iterable<Status>> getStatusByAccountId(@PathVariable Long id){
-        return new ResponseEntity<>(statusService.findAllByAccountId(id),HttpStatus.OK);
+    public ResponseEntity<Iterable<Status>> getStatusByAccountId(@PathVariable Long id) {
+        return new ResponseEntity<>(statusService.findAllByAccountId(id), HttpStatus.OK);
     }
 }
