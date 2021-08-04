@@ -49,4 +49,33 @@ public class StatusController {
         statusService.delete(id);
         return new ResponseEntity<>(statusOptional.get(),HttpStatus.NO_CONTENT);
     }
+
+
+    @GetMapping("/public")
+    public ResponseEntity<Iterable<Status>> getAllPublicStatus() {
+        Iterable<Status> statuses = statusService.findAllPublicStatus();
+        if (!statuses.iterator().hasNext()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(statuses, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/friends/{id}")
+    public ResponseEntity<Iterable<Status>> getAllFriendStatus(@PathVariable("id") Long id) {
+        Iterable<Status> friendStatuses = statusService.findAllFriendStatus(id);
+        if (!friendStatuses.iterator().hasNext()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(friendStatuses, HttpStatus.OK);
+    }
+
+    @GetMapping("/newsfeed/{id}")
+    public ResponseEntity<Iterable<Status>> getNewsFeed(@PathVariable("id") Long id) {
+        Iterable<Status> newsFeed = statusService.findALlStatusInNewsFeed(id);
+        if (!newsFeed.iterator().hasNext()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(newsFeed, HttpStatus.OK);
+    }
 }
