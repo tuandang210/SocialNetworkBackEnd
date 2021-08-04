@@ -15,39 +15,44 @@ import java.util.Optional;
 public class StatusController {
     @Autowired
     private IStatusService statusService;
+
     @GetMapping
-    public ResponseEntity<Iterable<Status>> showAllStatus(){
+    public ResponseEntity<Iterable<Status>> showAllStatus() {
         return new ResponseEntity<>(statusService.findAll(), HttpStatus.OK);
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity<Status> findByIdStatus(@PathVariable Long id){
-        Optional<Status> statusOptional=statusService.findById(id);
-        if (!statusOptional.isPresent()){
+    public ResponseEntity<Status> findByIdStatus(@PathVariable Long id) {
+        Optional<Status> statusOptional = statusService.findById(id);
+        if (!statusOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(statusOptional.get(),HttpStatus.OK);
+        return new ResponseEntity<>(statusOptional.get(), HttpStatus.OK);
     }
+
     @PostMapping
-    public ResponseEntity<Status> createStatus(@RequestBody Status status){
-        return new ResponseEntity<>(statusService.save(status),HttpStatus.OK);
+    public ResponseEntity<Status> createStatus(@RequestBody Status status) {
+        return new ResponseEntity<>(statusService.save(status), HttpStatus.OK);
     }
+
     @PutMapping("/{id}")
-    public ResponseEntity<Status> editStatus(@RequestBody Status status,@PathVariable Long id){
-        Optional<Status> statusOptional=statusService.findById(id);
-        if (!statusOptional.isPresent()){
+    public ResponseEntity<Status> editStatus(@RequestBody Status status, @PathVariable Long id) {
+        Optional<Status> statusOptional = statusService.findById(id);
+        if (!statusOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         status.setId(statusOptional.get().getId());
-        return new ResponseEntity<>(statusService.save(status),HttpStatus.OK);
+        return new ResponseEntity<>(statusService.save(status), HttpStatus.OK);
     }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Status> deleteStatus(@PathVariable Long id){
-        Optional<Status> statusOptional=statusService.findById(id);
-        if (!statusOptional.isPresent()){
+    public ResponseEntity<Status> deleteStatus(@PathVariable Long id) {
+        Optional<Status> statusOptional = statusService.findById(id);
+        if (!statusOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         statusService.delete(id);
-        return new ResponseEntity<>(statusOptional.get(),HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(statusOptional.get(), HttpStatus.NO_CONTENT);
     }
 
 
