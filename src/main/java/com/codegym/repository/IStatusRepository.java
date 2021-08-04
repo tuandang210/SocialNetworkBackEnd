@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IStatusRepository extends JpaRepository<Status,Long> {
+    Iterable<Status> findAllByAccountId(Long id);
 }
