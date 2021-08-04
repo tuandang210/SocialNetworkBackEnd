@@ -2,6 +2,8 @@ package com.codegym.controller;
 
 import com.codegym.model.account.Account;
 import com.codegym.model.account.Role;
+import com.codegym.model.dto.ChangePasswordAccount;
+import com.codegym.model.dto.ResponseMessage;
 import com.codegym.model.enumeration.EFriendStatus;
 import com.codegym.model.friend.AccountRelation;
 import com.codegym.model.friend.FriendStatus;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -30,6 +33,9 @@ public class AccountController {
 
     @Autowired
     private IRoleService roleService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private IFriendStatusService friendStatusService;
@@ -101,16 +107,35 @@ public class AccountController {
         return new ResponseEntity<>(accountService.PaginationAccount(offset), HttpStatus.OK);
     }
 
-    private void createDefaultRelation(Account account){
+    private void createDefaultRelation(Account account) {
         Iterable<Account> accounts = accountService.findAll();
 
         Role roleUser = new Role(2L, "ROLE_USER");
         FriendStatus guestRelation = friendStatusService.findByStatus(EFriendStatus.GUEST).get();
 
-        for (Account existedAccount: accounts) {
+        for (Account existedAccount : accounts) {
             if (!existedAccount.equals(account) && existedAccount.getRoles().contains(roleUser)) {
                 accountRelationService.save(new AccountRelation(existedAccount, account, guestRelation));
             }
         }
+    }
+
+    @PutMapping("/password/{id}")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordAccount account, @PathVariable Long id) {
+        Account account1 = accountService.findById(id).get();
+        if (account1 == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if(!passwordEncoder.matches(account.getOldPassword(), account1.getPassword())){
+            return new ResponseEntity<>(new ResponseMessage("Wrong password"), HttpStatus.BAD_REQUEST);
+        }
+        if(account.getNewPassword().equals(account.getOldPassword())){
+            return new ResponseEntity<>(new ResponseMessage("Password was not changed."), HttpStatus.BAD_REQUEST);
+        }
+        if (!account.getConfirmPassword().equals(account.getNewPassword())) {
+            return new ResponseEntity<>(new ResponseMessage("Password not match."), HttpStatus.BAD_REQUEST);
+        }
+        account1.setPassword(account.getNewPassword());
+        return new ResponseEntity<>(accountService.save(account1), HttpStatus.OK);
     }
 }
