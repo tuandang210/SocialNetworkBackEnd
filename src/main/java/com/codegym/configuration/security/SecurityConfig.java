@@ -143,9 +143,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.httpBasic().authenticationEntryPoint(restServicesEntryPoint());
         http.authorizeRequests()
 
-                .antMatchers("/", "/login", "/accounts/register", "/accounts/user","/profile/**","/status/list").permitAll()
+//                .antMatchers("/", "/login", "/accounts/register", "/accounts/user","/profile/**","/status/list").permitAll()
 
-                .antMatchers("/", "/relations/friends/**", "/login", "/status/account/**", "/accounts/register", "/accounts/user","/profile/**").permitAll()
+                .antMatchers("/", "/relations/friends/**", "/login", "/status/account/**", "/accounts/register", "/accounts/user","/profile/**","/privacy/**").permitAll()
 
                 .anyRequest().authenticated()
                 .and().csrf().disable()

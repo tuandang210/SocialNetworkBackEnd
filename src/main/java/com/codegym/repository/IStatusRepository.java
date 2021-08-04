@@ -11,5 +11,5 @@ public interface IStatusRepository extends JpaRepository<Status, Long> {
 
     Iterable<Status> findAllByPrivacy_NameAndAccount_IdOrderByPostedTimeDesc(String privacy, Long id);
 
-    Iterable<Status> findAllByAccountId(Long id);
+    Iterable<Status> findAllByAccountIdOrderByPostedTimeDesc(Long id);
 }
