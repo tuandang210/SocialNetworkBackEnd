@@ -6,13 +6,14 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
+@Table
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Status {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,20 +21,9 @@ public class Status {
     private String content;
     @ManyToOne
     private Account account;
-    @OneToOne
+    @ManyToOne
     private Privacy privacy;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Status status = (Status) o;
+    private Date postedTime = new Date();
 
-        return Objects.equals(id, status.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return 2026255630;
-    }
 }
