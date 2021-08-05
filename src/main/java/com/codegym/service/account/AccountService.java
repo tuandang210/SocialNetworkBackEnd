@@ -37,6 +37,12 @@ public class AccountService implements IAccountService {
         if (account.getAddress() == null) {
             account.setAddress("");
         }
+        if (account.getEmail() == null) {
+            account.setEmail("");
+        }
+        if (account.getPhone() == null) {
+            account.setPhone("");
+        }
         if (account.getAvatar() == null) {
             account.setAvatar("https://firebasestorage.googleapis.com/v0/b/social-network-d0202.appspot.com/o/sbcf-default-avatar.png?alt=media&token=900d125c-9b2d-47b1-9c86-bd646a1f53b8");
         }

@@ -26,4 +26,5 @@ public class Status {
 
     private Date postedTime = new Date();
 
+    private String time;
 }
