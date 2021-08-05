@@ -55,37 +55,43 @@ public class StatusController {
         return new ResponseEntity<>(statusOptional.get(), HttpStatus.NO_CONTENT);
     }
 
-
+    // API cho khách khi xem trang cá nhân của 1 người
     @GetMapping("/public/{id}")
-    public ResponseEntity<Iterable<Status>> getAllPublicStatus(@PathVariable("id") Long id) {
-        Iterable<Status> statuses = statusService.findAllPublicStatus(id);
+    public ResponseEntity<Iterable<Status>> getAllPublicStatus(@PathVariable("id") Long id,
+                                                               @RequestParam("size") Long size) {
+        Iterable<Status> statuses = statusService.findAllPublicStatusByMyselfPagination(id, size);
         if (!statuses.iterator().hasNext()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(statuses, HttpStatus.OK);
     }
 
-
+    // API cho bạn bè khi xem trang cá nhân
     @GetMapping("/friends/{id}")
-    public ResponseEntity<Iterable<Status>> getAllFriendStatus(@PathVariable("id") Long id) {
-        Iterable<Status> friendStatuses = statusService.findAllFriendStatus(id);
+    public ResponseEntity<Iterable<Status>> getAllFriendStatus(@PathVariable("id") Long id,
+                                                               @RequestParam("size") Long size) {
+        Iterable<Status> friendStatuses = statusService.findAllNonPrivateStatusByMySelfPagination(id, size);
         if (!friendStatuses.iterator().hasNext()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(friendStatuses, HttpStatus.OK);
     }
 
+    // API cho bảng tin của cá nhân
     @GetMapping("/newsfeed/{id}")
-    public ResponseEntity<Iterable<Status>> getNewsFeed(@PathVariable("id") Long id) {
-        Iterable<Status> newsFeed = statusService.findAllStatusInNewsFeed(id);
+    public ResponseEntity<Iterable<Status>> getNewsFeed(@PathVariable("id") Long id,
+                                                        @RequestParam("size") Long size) {
+        Iterable<Status> newsFeed = statusService.findAllStatusInNewsFeedPagination(id, size);
         if (!newsFeed.iterator().hasNext()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(newsFeed, HttpStatus.OK);
     }
 
+    // API cho cá nhân xem chính trang của mình
     @GetMapping("/account/{id}")
-    public ResponseEntity<Iterable<Status>> getStatusByAccountId(@PathVariable Long id) {
-        return new ResponseEntity<>(statusService.findAllByAccountId(id), HttpStatus.OK);
+    public ResponseEntity<Iterable<Status>> getStatusByAccountId(@PathVariable Long id,
+                                                                 @RequestParam Long size) {
+        return new ResponseEntity<>(statusService.findAllByAccountIdPagination(id, size), HttpStatus.OK);
     }
 }
