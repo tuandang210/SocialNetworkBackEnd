@@ -101,4 +101,11 @@ public class StatusService implements IStatusService{
     public Iterable<Status> findAllByAccountId(Long id) {
         return statusRepository.findAllByAccountIdOrderByPostedTimeDesc(id);
     }
+
+    public String getHours (Iterable<Status> statuses) {
+        List<Status> statuses1 = (List<Status>) statuses;
+        for (Status x: statuses1) {
+            x.setTime(x.getPostedTime().g);
+        }
+    }
 }
