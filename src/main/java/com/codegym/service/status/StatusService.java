@@ -6,6 +6,9 @@ import com.codegym.model.status.Status;
 import com.codegym.repository.IStatusRepository;
 import com.codegym.service.accountRelation.IAccountRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -43,7 +46,7 @@ public class StatusService implements IStatusService{
 
 
     @Override
-    public Iterable<Status> findAllPublicStatus(Long id) {
+    public Iterable<Status> findAllPublicStatusByOther(Long id) {
         Iterable<Status> allPublicStatus =  statusRepository.findAllByPrivacy_NameOrderByPostedTimeDesc("public");
         List<Status> guestPublicStatus = new ArrayList<>();
         for (Status s: allPublicStatus) {
@@ -52,6 +55,18 @@ public class StatusService implements IStatusService{
             }
         }
         return guestPublicStatus;
+    }
+
+    @Override
+    public Iterable<Status> findAllPublicStatusByMyself(Long id) {
+        Iterable<Status> allPublicStatus =  statusRepository.findAllByPrivacy_NameOrderByPostedTimeDesc("public");
+        List<Status> ownPublicStatus = new ArrayList<>();
+        for (Status s: allPublicStatus) {
+            if (s.getAccount().getId() == id){
+                ownPublicStatus.add(s);
+            }
+        }
+        return ownPublicStatus;
     }
 
     @Override
@@ -80,13 +95,15 @@ public class StatusService implements IStatusService{
 
         nonPrivateStatus.addAll(publics);
         nonPrivateStatus.addAll(friend_only);
+
+        Collections.sort(nonPrivateStatus, (status1, status2) -> (-1)*Long.valueOf(status1.getPostedTime().getTime()).compareTo(status2.getPostedTime().getTime()));
         return nonPrivateStatus;
     }
 
     public Iterable<Status> findAllStatusInNewsFeed(Long id) {
         List<Status> newsFeed = new ArrayList<>();
 
-        List<Status> publicStatus = (List<Status>) findAllPublicStatus(id);
+        List<Status> publicStatus = (List<Status>) findAllPublicStatusByOther(id);
         List<Status> friendStatus = (List<Status>) findAllFriendStatus(id);
         List<Status> nonPrivateOwnStatus = (List<Status>) findAllNonPrivateStatusByMyself(id);
         newsFeed.addAll(publicStatus);
@@ -100,5 +117,50 @@ public class StatusService implements IStatusService{
     @Override
     public Iterable<Status> findAllByAccountId(Long id) {
         return statusRepository.findAllByAccountIdOrderByPostedTimeDesc(id);
+    }
+
+    @Override
+    public Iterable<Status> findAllStatusInNewsFeedPagination(Long id, Long pageSize) {
+        List<Status> newsfeed = (List<Status>) findAllStatusInNewsFeed(id);
+        List<Status> shortcut = new ArrayList<>();
+        if (newsfeed.size() < pageSize){
+            return newsfeed;
+        }
+        for (int i = 0; i < pageSize; i++) {
+            shortcut.add(newsfeed.get(i));
+        }
+        return shortcut;
+    }
+
+    @Override
+    public Iterable<Status> findAllPublicStatusByMyselfPagination(Long id, Long pageSize) {
+        List<Status> publics = (List<Status>) findAllPublicStatusByMyself(id);
+        List<Status> shortcut = new ArrayList<>();
+        if (publics.size() < pageSize) {
+            return publics;
+        }
+        for (int i = 0; i < pageSize; i++) {
+            shortcut.add(publics.get(i));
+        }
+        return shortcut;
+    }
+
+    @Override
+    public Iterable<Status> findAllNonPrivateStatusByMySelfPagination(Long id, Long pageSize) {
+        List<Status> nonPrivate = (List<Status>) findAllNonPrivateStatusByMyself(id);
+        List<Status> shortcut = new ArrayList<>();
+        if (nonPrivate.size() < pageSize){
+            return nonPrivate;
+        }
+        for (int i = 0; i < pageSize; i++) {
+            shortcut.add(nonPrivate.get(i));
+        }
+        return shortcut;
+    }
+
+    @Override
+    public Page<Status> findAllByAccountIdPagination(Long id, Long pageSize) {
+        Pageable pageable = PageRequest.of(0, pageSize.intValue());
+        return statusRepository.findAllByAccountIdOrderByPostedTimeDesc(id, pageable);
     }
 }

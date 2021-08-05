@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,6 +67,9 @@ public class AccountService implements IAccountService {
 
     @Override
     public Account saveVer(Account account) {
+        if (account.getPostedTime() == null) {
+            account.setPostedTime(new Date());
+        }
         if (account.getAvatar() == null) {
             account.setAvatar("https://firebasestorage.googleapis.com/v0/b/social-network-d0202.appspot.com/o/sbcf-default-avatar.png?alt=media&token=900d125c-9b2d-47b1-9c86-bd646a1f53b8");
         }
