@@ -168,15 +168,24 @@ public class StatusService implements IStatusService {
     @Override
     public Page<Status> findAllByAccountIdPagination(Long id, Long pageSize) {
         Pageable pageable = PageRequest.of(0, pageSize.intValue());
-        return statusRepository.findAllByAccountIdOrderByPostedTimeDesc(id, pageable);
+        Page<Status> page = statusRepository.findAllByAccountIdOrderByPostedTimeDesc(id, pageable);
+        getHoursPage(page);
+        return page;
     }
 
     public Iterable<Status> getHours(Iterable<Status> statuses) {
-        List<Status> statuses1 = (List<Status>) statuses;
-        for (Status x : statuses1) {
+        for (Status x : statuses) {
             Long date = (new Date().getTime() - x.getPostedTime().getTime()) / 1000 / 60;
             x.setTime(date + "");
         }
-        return statuses1;
+        return statuses;
+    }
+
+    public Page<Status> getHoursPage(Page<Status> statuses) {
+        for (Status x : statuses.getContent()) {
+            Long date = (new Date().getTime() - x.getPostedTime().getTime()) / 1000 / 60;
+            x.setTime(date + "");
+        }
+        return statuses;
     }
 }
