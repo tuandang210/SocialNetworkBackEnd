@@ -16,8 +16,6 @@ import java.util.Optional;
 public class CommentController {
     @Autowired
     private CommentService commentService;
-    @Autowired
-    private AccountService accountService;
     @GetMapping("/{id}")
     public ResponseEntity<Iterable<Comment>> showAllComment(@PathVariable Long id){
         return new ResponseEntity<>(commentService.findAllByStatusId(id), HttpStatus.OK);
