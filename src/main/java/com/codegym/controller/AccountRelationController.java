@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @CrossOrigin("*")
@@ -73,6 +74,9 @@ public class AccountRelationController {
             return
                     new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        if(id1 == id2) {
+            return new  ResponseEntity<>(new ArrayList<>(), HttpStatus.NO_CONTENT);
+        }
         Iterable<Account> mutualFriends = accountRelationService.findMutualFriends(id1, id2);
         if (!mutualFriends.iterator().hasNext()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -103,7 +107,7 @@ public class AccountRelationController {
 
         Iterable<Account> received = accountRelationService.findAllFriendRequestSender(id);
         if (!received.iterator().hasNext()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(received, HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(received, HttpStatus.OK);
     }
