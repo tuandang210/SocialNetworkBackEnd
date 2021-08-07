@@ -1,13 +1,16 @@
 package com.codegym.controller;
 
+import com.codegym.model.dto.StatusDto;
+import com.codegym.model.image.ImageStatus;
 import com.codegym.model.status.Status;
+import com.codegym.service.imageStatus.IStatusImageService;
 import com.codegym.service.status.IStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @CrossOrigin("*")
@@ -15,6 +18,9 @@ import java.util.Optional;
 public class StatusController {
     @Autowired
     private IStatusService statusService;
+
+    @Autowired
+    private IStatusImageService imageService;
 
     @GetMapping
     public ResponseEntity<Iterable<Status>> showAllStatus() {
@@ -31,7 +37,18 @@ public class StatusController {
     }
 
     @PostMapping
-    public ResponseEntity<Status> createStatus(@RequestBody Status status) {
+    public ResponseEntity<Status> createStatus(@RequestBody StatusDto statusDto) {
+        ImageStatus imageStatus = new ImageStatus();
+        imageStatus.setUrl(statusDto.getUrl());
+        imageService.save(imageStatus);
+        Status status = new Status();
+        Set<ImageStatus> imageStatusSet = new HashSet<>();
+        imageStatusSet.add(imageService.findByUrl(statusDto.getUrl()).get());
+        status.setContent(statusDto.getContent());
+        status.setAccount(statusDto.getAccount());
+        status.setPrivacy(statusDto.getPrivacy());
+        status.setImageStatuses(imageStatusSet);
+        status.setPostedTime(new Date());
         return new ResponseEntity<>(statusService.save(status), HttpStatus.OK);
     }
 

@@ -1,7 +1,9 @@
 package com.codegym.controller;
 
 import com.codegym.model.image.ImageStatus;
+import com.codegym.model.status.Status;
 import com.codegym.service.imageStatus.IStatusImageService;
+import com.codegym.service.status.StatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,18 +18,18 @@ public class ImageStatusController {
     @Autowired
     private IStatusImageService statusImageService;
 
-    @GetMapping("/status/{id}")
-    public ResponseEntity<Iterable<ImageStatus>> findAllByStatus(@PathVariable Long id) {
-        Iterable<ImageStatus> imageStatuses = statusImageService.findAllByStatus_Id(id);
-        if(!imageStatuses.iterator().hasNext()) {
-            return new ResponseEntity<>(imageStatuses, HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(imageStatuses, HttpStatus.OK);
+    @PostMapping
+    public ResponseEntity<?> createImage (@RequestBody ImageStatus imageStatus) {
+        return new ResponseEntity<>(statusImageService.save(imageStatus), HttpStatus.CREATED);
     }
 
-    @PostMapping
-    public ResponseEntity<ImageStatus> createImage (@RequestBody ImageStatus imageStatus) {
-        return new ResponseEntity<>(statusImageService.save(imageStatus), HttpStatus.CREATED);
+    @GetMapping
+    public ResponseEntity<?> findByUrl(@RequestParam String url) {
+        Optional<ImageStatus> image = statusImageService.findByUrl(url);
+        if(!image.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(image, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

@@ -2,12 +2,14 @@ package com.codegym.model.status;
 
 import com.codegym.model.account.Account;
 import com.codegym.model.account.Privacy;
+import com.codegym.model.image.ImageStatus;
 import lombok.*;
-import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.Objects;
+import java.util.List;
+import java.util.Set;
+
 
 @Entity
 @Table
@@ -23,6 +25,9 @@ public class Status {
     private Account account;
     @ManyToOne
     private Privacy privacy;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    private Set<ImageStatus> imageStatuses;
 
     private Date postedTime = new Date();
 

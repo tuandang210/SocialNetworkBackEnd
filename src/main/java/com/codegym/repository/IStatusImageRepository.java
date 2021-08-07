@@ -4,7 +4,9 @@ import com.codegym.model.image.ImageStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface IStatusImageRepository extends JpaRepository<ImageStatus, Long> {
-    Iterable<ImageStatus> findAllByStatus_Id(Long id);
+    Optional<ImageStatus> findByUrl(String url);
 }

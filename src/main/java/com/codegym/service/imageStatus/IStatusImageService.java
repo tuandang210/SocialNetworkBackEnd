@@ -3,6 +3,9 @@ package com.codegym.service.imageStatus;
 import com.codegym.model.image.ImageStatus;
 import com.codegym.service.IGeneralService;
 
+import java.util.Optional;
+
 public interface IStatusImageService extends IGeneralService<ImageStatus> {
-    Iterable<ImageStatus> findAllByStatus_Id(Long id);
+    Optional<ImageStatus> findByUrl(String url);
+
 }

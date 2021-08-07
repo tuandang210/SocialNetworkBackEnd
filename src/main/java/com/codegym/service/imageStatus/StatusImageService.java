@@ -33,7 +33,7 @@ public class StatusImageService implements IStatusImageService {
     }
 
     @Override
-    public Iterable<ImageStatus> findAllByStatus_Id(Long id) {
-        return statusImageRepository.findAllByStatus_Id(id);
+    public Optional<ImageStatus> findByUrl(String url) {
+        return statusImageRepository.findByUrl(url);
     }
 }
