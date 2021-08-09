@@ -13,8 +13,8 @@ public class SocketController {
     @Autowired
     private IChatService chatService;
 
-    @MessageMapping("/products")
-    @SendTo("/topic/products")
+    @MessageMapping("/message")
+    @SendTo("/topic/message")
     public Chat messageUsiSocket(Chat chat) {
         return chatService.save(chat);
     }

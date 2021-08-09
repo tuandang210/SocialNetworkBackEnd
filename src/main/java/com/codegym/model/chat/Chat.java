@@ -1,6 +1,7 @@
 package com.codegym.model.chat;
 
 import com.codegym.model.account.Account;
+import com.codegym.model.group.Group;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -22,5 +23,8 @@ public class Chat {
     @ManyToOne
     private Account account2;
 
-    private Date date = new Date();
+    private String date;
+
+    @ManyToOne
+    private Group group;
 }
