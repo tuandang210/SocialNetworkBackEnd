@@ -1,7 +1,7 @@
 package com.codegym.controller;
 
-import com.codegym.model.Product;
-import com.codegym.service.product.IProductService;
+import com.codegym.model.chat.Chat;
+import com.codegym.service.chat.IChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SocketController {
     @Autowired
-    private IProductService productService;
+    private IChatService chatService;
 
     @MessageMapping("/products")
     @SendTo("/topic/products")
-    public Product createNewProductUsiSocket(Product product) {
-        return productService.save(product);
+    public Chat messageUsiSocket(Chat chat) {
+        return chatService.save(chat);
     }
 }
