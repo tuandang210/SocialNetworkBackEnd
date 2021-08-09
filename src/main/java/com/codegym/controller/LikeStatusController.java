@@ -17,7 +17,7 @@ public class LikeStatusController {
     private ILikeStatusService likeStatusService;
     @GetMapping("/{id}")
     public ResponseEntity<Iterable<LikeStatus>> showAllLikeStatus(@PathVariable Long id){
-        return new ResponseEntity<>(likeStatusService.findAllByStatusId(id), HttpStatus.OK);
+        return new ResponseEntity<>(likeStatusService.findAllByStatusIdAndIsLikeTrue(id), HttpStatus.OK);
     }
     @PostMapping
     public ResponseEntity<LikeStatus> createLikeStatus(@RequestBody LikeStatus likeStatus){
