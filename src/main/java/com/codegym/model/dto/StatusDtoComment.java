@@ -4,6 +4,7 @@ import com.codegym.model.account.Account;
 import com.codegym.model.account.Privacy;
 import com.codegym.model.comment.Comment;
 import com.codegym.model.image.ImageStatus;
+import com.codegym.model.like.LikeStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,8 @@ public class StatusDtoComment {
     private Set<ImageStatus> imageStatuses;
 
     private List<Comment> comments;
+
+    private List<LikeStatus> likeStatuses;
 
     private Date postedTime;
 

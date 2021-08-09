@@ -4,9 +4,11 @@ import com.codegym.model.comment.Comment;
 import com.codegym.model.dto.StatusDto;
 import com.codegym.model.dto.StatusDtoComment;
 import com.codegym.model.image.ImageStatus;
+import com.codegym.model.like.LikeStatus;
 import com.codegym.model.status.Status;
 import com.codegym.service.comment.ICommentService;
 import com.codegym.service.imageStatus.IStatusImageService;
+import com.codegym.service.likeStatus.ILikeStatusService;
 import com.codegym.service.status.IStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(origins = "*")
 @RequestMapping("/status")
 public class StatusController {
     @Autowired
@@ -29,6 +31,8 @@ public class StatusController {
     @Autowired
     private ICommentService commentService;
 
+    @Autowired
+    private ILikeStatusService likeStatusService;
 
     @GetMapping("/{id}")
     public ResponseEntity<Status> findByIdStatus(@PathVariable Long id) {
@@ -107,6 +111,9 @@ public class StatusController {
             StatusDtoComment statusDtoComment = new StatusDtoComment();
             Page<Comment> commentList;
             commentList = commentService.findAllByStatusIdPagination(x.getId(), 3L);
+            List<LikeStatus> likeStatuses;
+            likeStatuses = (List<LikeStatus>) likeStatusService.findAllByStatusIdAndIsLikeTrue(x.getId());
+            statusDtoComment.setLikeStatuses(likeStatuses);
             statusDtoComment.setComments(commentList.getContent());
             statusDtoComment.setContent(x.getContent());
             statusDtoComment.setImageStatuses(x.getImageStatuses());
