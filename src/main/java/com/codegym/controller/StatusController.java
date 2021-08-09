@@ -1,11 +1,15 @@
 package com.codegym.controller;
 
+import com.codegym.model.comment.Comment;
 import com.codegym.model.dto.StatusDto;
+import com.codegym.model.dto.StatusDtoComment;
 import com.codegym.model.image.ImageStatus;
 import com.codegym.model.status.Status;
+import com.codegym.service.comment.ICommentService;
 import com.codegym.service.imageStatus.IStatusImageService;
 import com.codegym.service.status.IStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +26,9 @@ public class StatusController {
     @Autowired
     private IStatusImageService imageService;
 
-    @GetMapping
-    public ResponseEntity<Iterable<Status>> showAllStatus() {
-        return new ResponseEntity<>(statusService.findAll(), HttpStatus.OK);
-    }
+    @Autowired
+    private ICommentService commentService;
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Status> findByIdStatus(@PathVariable Long id) {
@@ -96,13 +99,25 @@ public class StatusController {
 
     // API cho bảng tin của cá nhân
     @GetMapping("/newsfeed/{id}")
-    public ResponseEntity<Iterable<Status>> getNewsFeed(@PathVariable("id") Long id,
+    public ResponseEntity<?> getNewsFeed(@PathVariable("id") Long id,
                                                         @RequestParam("size") Long size) {
-        Iterable<Status> newsFeed = statusService.findAllStatusInNewsFeedPagination(id, size);
-        if (!newsFeed.iterator().hasNext()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        List<Status> newsFeed = (List<Status>) statusService.findAllStatusInNewsFeedPagination(id, size);
+        List<StatusDtoComment> statusDtoCommentList = new ArrayList<>();
+        for (Status x : newsFeed) {
+            StatusDtoComment statusDtoComment = new StatusDtoComment();
+            Page<Comment> commentList;
+            commentList = commentService.findAllByStatusIdPagination(x.getId(), 3L);
+            statusDtoComment.setComments(commentList.getContent());
+            statusDtoComment.setContent(x.getContent());
+            statusDtoComment.setImageStatuses(x.getImageStatuses());
+            statusDtoComment.setAccount(x.getAccount());
+            statusDtoComment.setPrivacy(x.getPrivacy());
+            statusDtoComment.setId(x.getId());
+            statusDtoComment.setTime(x.getTime());
+            statusDtoComment.setPostedTime(x.getPostedTime());
+            statusDtoCommentList.add(statusDtoComment);
         }
-        return new ResponseEntity<>(newsFeed, HttpStatus.OK);
+        return new ResponseEntity<>(statusDtoCommentList, HttpStatus.OK);
     }
 
     // API cho cá nhân xem chính trang của mình
