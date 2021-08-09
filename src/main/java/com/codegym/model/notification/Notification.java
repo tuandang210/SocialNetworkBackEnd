@@ -1,6 +1,9 @@
 package com.codegym.model.notification;
 
 import com.codegym.model.account.Account;
+import com.codegym.model.comment.Comment;
+import com.codegym.model.like.LikeStatus;
+import com.codegym.model.status.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,4 +30,15 @@ public class Notification {
 
     private Boolean isRead = false;
 
+    //Bài đăng của bạn bè
+    @ManyToOne
+    private Status status;
+
+    //Bạn bè comment trên bài của mình
+    @ManyToOne
+    private Comment comment;
+
+    //Bạn bè like bài của mình
+    @ManyToOne
+    private LikeStatus like;
 }
