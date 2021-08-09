@@ -31,14 +31,14 @@ public class Notification {
     private Boolean isRead = false;
 
     //Bài đăng của bạn bè
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Status status;
 
     //Bạn bè comment trên bài của mình
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Comment comment;
 
     //Bạn bè like bài của mình
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private LikeStatus like;
 }
