@@ -42,4 +42,9 @@ public class CommentController {
         commentService.delete(id);
         return new ResponseEntity<>(commentOptional.get(),HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("/page/{id}")
+    public ResponseEntity<Iterable<Comment>> findALlByStatusIdAndPagination(@PathVariable Long id, @RequestParam("size") Long pageSize) {
+        return new ResponseEntity<>(commentService.findAllByStatusIdPagination(id, pageSize), HttpStatus.OK);
+    }
 }

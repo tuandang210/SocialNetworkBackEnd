@@ -3,18 +3,19 @@ package com.codegym.model.dto;
 import com.codegym.model.account.Account;
 import com.codegym.model.account.Privacy;
 import com.codegym.model.comment.Comment;
-import com.codegym.model.like.LikeStatus;
+import com.codegym.model.image.ImageStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
-
-
+import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StatusDto {
+public class StatusDtoComment {
+
     private Long id;
 
     private String content;
@@ -23,5 +24,11 @@ public class StatusDto {
 
     private Privacy privacy;
 
-    private String url;
+    private Set<ImageStatus> imageStatuses;
+
+    private List<Comment> comments;
+
+    private Date postedTime;
+
+    private String time;
 }

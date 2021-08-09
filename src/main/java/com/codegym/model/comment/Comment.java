@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -22,6 +23,10 @@ public class Comment {
     private Account account;
     @ManyToOne
     private Status status;
+
+    private Date date = new Date();
+
+    private String time;
 
     @Override
     public boolean equals(Object o) {
