@@ -5,17 +5,18 @@ import com.codegym.repository.IChatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+
+import static java.util.Comparator.comparing;
 
 @Service
 public class ChatService implements IChatService {
 
     @Autowired
     private IChatRepository chatRepository;
-    private java.util.Comparator<? super Chat> Comparator;
+//    private java.util.Comparator<? super Chat> Comparator;
 
     @Override
     public Iterable<Chat> findAll() {
@@ -54,7 +55,7 @@ public class ChatService implements IChatService {
         List<Chat> chats1 = (List<Chat>) chatRepository.findChatsByAccount1_IdAndAccount2_Id(account1_id, account2_id);
         List<Chat> chats2 = (List<Chat>) chatRepository.findChatsByAccount1_IdAndAccount2_Id(account2_id, account1_id);
         chats1.addAll(chats2);
-        chats1.sort((chat1, chat2) -> (-1) * chat1.getId().compareTo(chat2.getId()));
+        chats1.sort(comparing(Chat::getId));
         return chats1;
     }
 }

@@ -142,7 +142,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().ignoringAntMatchers("/**");
         http.httpBasic().authenticationEntryPoint(restServicesEntryPoint());
         http.authorizeRequests()
-                .antMatchers("/","/products/**","/ws/**","/status/public/**", "/relations/friends/**", "/login", "/status/account/**", "/accounts/register", "/accounts/user","/profile/**","/privacy/**").permitAll()
+                .antMatchers("/","/status/public/**", "/relations/friends/**", "/login", "/status/account/**", "/accounts/register", "/accounts/user","/profile/**","/privacy/**").permitAll()
                 .anyRequest().authenticated()
                 .and().csrf().disable()
                 .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
