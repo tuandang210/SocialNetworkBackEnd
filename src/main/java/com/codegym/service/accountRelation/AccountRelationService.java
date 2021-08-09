@@ -3,17 +3,17 @@ package com.codegym.service.accountRelation;
 import com.codegym.model.account.Account;
 import com.codegym.model.enumeration.EFriendStatus;
 import com.codegym.model.friend.AccountRelation;
+import com.codegym.model.friend.FriendStatus;
 import com.codegym.repository.IAccountRelationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AccountRelationService implements IAccountRelationService{
+public class AccountRelationService implements IAccountRelationService {
     @Autowired
     private IAccountRelationRepository accountRelationRepository;
 
@@ -57,9 +57,9 @@ public class AccountRelationService implements IAccountRelationService{
     public Iterable<Account> findAllByAccountIdAndStatus(Long id, EFriendStatus status) {
         Iterable<AccountRelation> relations = findAllByAccountId(id);
         List<Account> statusAccounts = new ArrayList<>();
-        for (AccountRelation relation: relations) {
+        for (AccountRelation relation : relations) {
             if (relation.getFriendStatus().getStatus().equals(status)) {
-                if (relation.getAccount1().getId().equals(id)){
+                if (relation.getAccount1().getId().equals(id)) {
                     statusAccounts.add(relation.getAccount2());
                 } else {
                     statusAccounts.add(relation.getAccount1());
@@ -74,7 +74,7 @@ public class AccountRelationService implements IAccountRelationService{
         Iterable<AccountRelation> pending = accountRelationRepository.findAllByAccount2_IdAndFriendStatus_Status(id, EFriendStatus.PENDING);
         List<Account> senders = new ArrayList<>();
 
-        for (AccountRelation relation: pending) {
+        for (AccountRelation relation : pending) {
             senders.add(relation.getAccount1());
         }
         return senders;
@@ -85,7 +85,7 @@ public class AccountRelationService implements IAccountRelationService{
         Iterable<AccountRelation> pending = accountRelationRepository.findAllByAccount1_IdAndFriendStatus_Status(id, EFriendStatus.PENDING);
         List<Account> receivers = new ArrayList<>();
 
-        for (AccountRelation relation: pending) {
+        for (AccountRelation relation : pending) {
             receivers.add(relation.getAccount2());
         }
         return receivers;
@@ -97,8 +97,8 @@ public class AccountRelationService implements IAccountRelationService{
         Iterable<Account> friendList2 = findAllByAccountIdAndStatus(id2, EFriendStatus.FRIEND);
         List<Account> mutualFriends = new ArrayList<>();
 
-        for (Account friend1: friendList1) {
-            for (Account friend2: friendList2) {
+        for (Account friend1 : friendList1) {
+            for (Account friend2 : friendList2) {
                 if (friend1.equals(friend2)) {
                     mutualFriends.add(friend1);
                 }
@@ -106,4 +106,23 @@ public class AccountRelationService implements IAccountRelationService{
         }
         return mutualFriends;
     }
+
+    @Override
+    public List<Account> findAllByAccount1UsernameContainingAndAccount1IdAndFriendStatus_Status(String account1_username, Long account1_id) {
+        List<AccountRelation> accountRelationList = (List<AccountRelation>) accountRelationRepository.findAllByAccount1UsernameContainingAndAccount1IdAndFriendStatus_Status(account1_username, account1_id, EFriendStatus.FRIEND);
+        List<AccountRelation> accountRelationList1 = (List<AccountRelation>) accountRelationRepository.findAllByAccount1UsernameContainingAndAccount2IdAndFriendStatus_Status(account1_username, account1_id, EFriendStatus.FRIEND);
+        accountRelationList.addAll(accountRelationList1);
+        List<Account> accounts = new ArrayList<>();
+        for (AccountRelation relation : accountRelationList) {
+            if (!relation.getAccount1().getId().equals(account1_id) && relation.getAccount2().getId().equals(account1_id)){
+                accounts.add(relation.getAccount1());
+            }
+            if (relation.getAccount1().getId().equals(account1_id) && !relation.getAccount2().getId().equals(account1_id)){
+                accounts.add(relation.getAccount2());
+            }
+        }
+        return accounts;
+    }
+
+
 }

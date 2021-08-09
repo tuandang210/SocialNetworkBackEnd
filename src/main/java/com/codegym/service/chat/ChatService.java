@@ -16,7 +16,6 @@ public class ChatService implements IChatService {
 
     @Autowired
     private IChatRepository chatRepository;
-//    private java.util.Comparator<? super Chat> Comparator;
 
     @Override
     public Iterable<Chat> findAll() {
@@ -56,6 +55,15 @@ public class ChatService implements IChatService {
         List<Chat> chats2 = (List<Chat>) chatRepository.findChatsByAccount1_IdAndAccount2_Id(account2_id, account1_id);
         chats1.addAll(chats2);
         chats1.sort(comparing(Chat::getId));
+//        chats1.sort((chat1,chat2) -> (-1) * chat1.getId().compareTo(chat2.getId()));
         return chats1;
     }
+
+    @Override
+    public Iterable<Chat> findChatsByGroup_IdOrderByDateAsc(Long groupId, int size) {
+        PageRequest pageRequest = PageRequest.of(0,size);
+        Page<Chat> chatPage = chatRepository.findChatsByGroup_IdOrderByDate(groupId,pageRequest);
+        return chatPage.getContent();
+    }
+
 }

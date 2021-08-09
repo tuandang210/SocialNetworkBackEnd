@@ -66,6 +66,11 @@ public class AccountRelationController {
         return new ResponseEntity<>(friends, HttpStatus.OK);
     }
 
+    @GetMapping("/search/{id}")
+    public ResponseEntity<Iterable<Account>> findFriendsOfAnAccount(@PathVariable Long id,@RequestParam String username){
+        return new ResponseEntity<>(accountRelationService.findAllByAccount1UsernameContainingAndAccount1IdAndFriendStatus_Status(username,id),HttpStatus.OK);
+    }
+
 
     @GetMapping("/{id1}/{id2}/friends")
     public ResponseEntity<Iterable<Account>> findMutualFriends(@PathVariable("id1") Long id1,
