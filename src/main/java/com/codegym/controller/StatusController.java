@@ -111,7 +111,7 @@ public class StatusController {
     @GetMapping("/newsfeed/{id}")
     public ResponseEntity<?> getNewsFeed(@PathVariable("id") Long id,
                                                         @RequestParam("size") Long size) {
-        List<Status> newsFeed = (List<Status>) statusService.findAllStatusInNewsFeedPagination(id, 5L);
+        List<Status> newsFeed = (List<Status>) statusService.findAllStatusInNewsFeedPagination(id, size);
         List<StatusDtoComment> statusDtoCommentList = new ArrayList<>();
         for (Status x : newsFeed) {
             StatusDtoComment statusDtoComment = new StatusDtoComment();
