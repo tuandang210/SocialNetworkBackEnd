@@ -39,4 +39,9 @@ public class LikeStatusService implements ILikeStatusService{
     public Iterable<LikeStatus> findAllByStatusIdAndIsLikeTrue(Long id) {
         return likeStatusRepository.findAllByStatusIdAndIsLikeTrue(id);
     }
+
+    @Override
+    public Optional<LikeStatus> findByAccountIdAndStatusId(Long accountId, Long statusId) {
+        return likeStatusRepository.findByAccountIdAndStatusId(accountId, statusId);
+    }
 }

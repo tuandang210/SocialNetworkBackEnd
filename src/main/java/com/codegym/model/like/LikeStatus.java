@@ -17,7 +17,7 @@ public class LikeStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Boolean isLike;
+    private Boolean isLike = false;
     @OneToOne
     private Account account;
     @ManyToOne

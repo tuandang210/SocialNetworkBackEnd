@@ -16,19 +16,30 @@ public class LikeStatusController {
     private ILikeStatusService likeStatusService;
     @GetMapping("/{id}")
     public ResponseEntity<Iterable<LikeStatus>> showAllLikeStatus(@PathVariable Long id){
-        return new ResponseEntity<>(likeStatusService.findAllByStatusIdAndIsLikeTrue(id), HttpStatus.OK);
+        return new ResponseEntity<>(likeStatusService.findAllByStatusId(id), HttpStatus.OK);
     }
     @PostMapping
     public ResponseEntity<LikeStatus> createLikeStatus(@RequestBody LikeStatus likeStatus){
         return new ResponseEntity<>(likeStatusService.save(likeStatus),HttpStatus.CREATED);
     }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<LikeStatus> deleteLikeStatus(@PathVariable Long id){
-        Optional<LikeStatus> optionalLikeStatus=likeStatusService.findById(id);
-        if (!optionalLikeStatus.isPresent()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+    @PutMapping("/{id}")
+    public ResponseEntity<LikeStatus> update(@PathVariable Long id, @RequestBody LikeStatus likeStatus) {
+        Optional<LikeStatus> likeStatusOptional = likeStatusService.findById(id);
+        if(!likeStatusOptional.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        likeStatusService.delete(id);
-        return new ResponseEntity<>(optionalLikeStatus.get(),HttpStatus.OK);
+        likeStatus.setId(likeStatusOptional.get().getId());
+        return new ResponseEntity<>(likeStatus, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{accountId}")
+    public ResponseEntity<LikeStatus> deleteLikeStatus(@PathVariable Long accountId, @RequestParam Long statusId){
+        Optional<LikeStatus> optionalLikeStatus=likeStatusService.findByAccountIdAndStatusId(accountId, statusId);
+        if (!optionalLikeStatus.isPresent()){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        likeStatusService.delete(optionalLikeStatus.get().getId());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

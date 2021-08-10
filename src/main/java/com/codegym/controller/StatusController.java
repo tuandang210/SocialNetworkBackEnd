@@ -112,7 +112,7 @@ public class StatusController {
             Page<Comment> commentList;
             commentList = commentService.findAllByStatusIdPagination(x.getId(), 3L);
             List<LikeStatus> likeStatuses;
-            likeStatuses = (List<LikeStatus>) likeStatusService.findAllByStatusIdAndIsLikeTrue(x.getId());
+            likeStatuses = (List<LikeStatus>) likeStatusService.findAllByStatusId(x.getId());
             statusDtoComment.setLikeStatuses(likeStatuses);
             statusDtoComment.setComments(commentList.getContent());
             statusDtoComment.setContent(x.getContent());
