@@ -9,6 +9,7 @@ import com.codegym.model.status.Status;
 import com.codegym.service.comment.ICommentService;
 import com.codegym.service.imageStatus.IStatusImageService;
 import com.codegym.service.likeStatus.ILikeStatusService;
+import com.codegym.service.notification.INotificationService;
 import com.codegym.service.status.IStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,9 @@ public class StatusController {
     @Autowired
     private ILikeStatusService likeStatusService;
 
+    @Autowired
+    private INotificationService notificationService;
+
     @GetMapping("/{id}")
     public ResponseEntity<Status> findByIdStatus(@PathVariable Long id) {
         Optional<Status> statusOptional = statusService.findById(id);
@@ -56,7 +60,9 @@ public class StatusController {
         status.setPrivacy(statusDto.getPrivacy());
         status.setImageStatuses(imageStatusSet);
         status.setPostedTime(new Date());
-        return new ResponseEntity<>(statusService.save(status), HttpStatus.OK);
+        Status saved = statusService.save(status);
+        notificationService.saveStatusNotification(saved);
+        return new ResponseEntity<>(saved, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")

@@ -27,9 +27,9 @@ public class LikeStatusController {
 
     @PostMapping
     public ResponseEntity<LikeStatus> createLikeStatus(@RequestBody LikeStatus likeStatus) {
-        LikeStatus like = likeStatusService.save(likeStatus);
-        notificationService.saveLikeNotification(like);
-        return new ResponseEntity<>(like, HttpStatus.CREATED);
+        LikeStatus saved = likeStatusService.save(likeStatus);
+        notificationService.saveLikeNotification(saved);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
