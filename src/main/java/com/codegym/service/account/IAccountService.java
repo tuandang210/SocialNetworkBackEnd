@@ -18,4 +18,6 @@ public interface IAccountService extends IGeneralService<Account>, UserDetailsSe
     boolean existsAccountByEmail(String email);
 
     boolean existsAccountById(Long id);
+
+    Iterable<Account> findAccountsByUsernameContaining(String username);
 }

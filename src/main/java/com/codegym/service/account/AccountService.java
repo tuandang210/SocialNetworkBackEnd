@@ -4,6 +4,7 @@ import com.codegym.model.account.Account;
 import com.codegym.model.dto.AccountPrincipal;
 import com.codegym.repository.IAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -100,6 +101,12 @@ public class AccountService implements IAccountService {
     @Override
     public boolean existsAccountById(Long id) {
         return accountRepository.existsAccountById(id);
+    }
+
+    @Override
+    public Iterable<Account> findAccountsByUsernameContaining(String username) {
+        PageRequest pageRequest = PageRequest.of(0,5);
+        return accountRepository.findAccountsByUsernameContaining(username,pageRequest).getContent();
     }
 
 
