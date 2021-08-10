@@ -94,26 +94,26 @@ public class NotificationController {
     }
 
 
-    // save like notification
-    @PostMapping("/like")
-    public ResponseEntity<?> saveLikeNoti (@RequestBody LikeStatus like) {
-        Account author = like.getStatus().getAccount();
-        Account liker = like.getAccount();
-        if (author.equals(liker)) {
-            return new ResponseEntity<>(new ResponseMessage("Should not receive notification about myself"), HttpStatus.BAD_REQUEST);
-        }
-
-        AccountRelation relation = accountRelationService.findByTwoAccountIds(author.getId(), liker.getId()).get();
-        if (!relation.getFriendStatus().getStatus().equals(EFriendStatus.FRIEND)) {
-            return new ResponseEntity<>(new ResponseMessage("Not friends"), HttpStatus.BAD_REQUEST);
-        }
-
-        Notification likeNoti = new Notification();
-        likeNoti.setAccount(author);
-        likeNoti.setLike(like);
-        likeNoti.setContent(liker.getUsername() + " đã thích bài viết của bạn");
-        return new ResponseEntity<>(notificationService.save(likeNoti), HttpStatus.CREATED);
-    }
+//    // save like notification
+//    @PostMapping("/like")
+//    public ResponseEntity<?> saveLikeNoti (@RequestBody LikeStatus like) {
+//        Account author = like.getStatus().getAccount();
+//        Account liker = like.getAccount();
+//        if (author.equals(liker)) {
+//            return new ResponseEntity<>(new ResponseMessage("Should not receive notification about myself"), HttpStatus.BAD_REQUEST);
+//        }
+//
+//        AccountRelation relation = accountRelationService.findByTwoAccountIds(author.getId(), liker.getId()).get();
+//        if (!relation.getFriendStatus().getStatus().equals(EFriendStatus.FRIEND)) {
+//            return new ResponseEntity<>(new ResponseMessage("Not friends"), HttpStatus.BAD_REQUEST);
+//        }
+//
+//        Notification likeNoti = new Notification();
+//        likeNoti.setAccount(author);
+//        likeNoti.setLike(like);
+//        likeNoti.setContent(liker.getUsername() + " đã thích bài viết của bạn");
+//        return new ResponseEntity<>(notificationService.save(likeNoti), HttpStatus.CREATED);
+//    }
 
 
     // save status notification
@@ -141,5 +141,48 @@ public class NotificationController {
         statusNoti.setStatus(status);
         statusNoti.setContent(author.getUsername() + " đã đăng một bài viết mới");
         return new ResponseEntity<>(notificationService.save(statusNoti), HttpStatus.CREATED);
+    }
+
+    // đánh dấu chưa đọc
+    @PutMapping("/unread/{id}")
+    public ResponseEntity<?> markAsUnread (@PathVariable("id") Long id) {
+        Notification noti = notificationService.findById(id).get();
+        if (noti == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (noti.getIsRead() == false){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        noti.setIsRead(false);
+        return new ResponseEntity<>(notificationService.save(noti), HttpStatus.OK);
+    }
+
+    // đánh dấu đã đọc
+    @PutMapping("/read/{id}")
+    public ResponseEntity<?> markAsRead (@PathVariable("id") Long id) {
+        Notification noti = notificationService.findById(id).get();
+        if (noti == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (noti.getIsRead() == true){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        noti.setIsRead(true);
+        return new ResponseEntity<>(notificationService.save(noti), HttpStatus.OK);
+    }
+
+
+    // đánh dấu đã đọc tất cả
+    @PutMapping("/read/all")
+    public ResponseEntity<?> markAllAsRead(@PathVariable("id") Long id) {
+        Iterable<Notification> unreadNoti = notificationService.findAllUnreadByAccountId(id);
+        if (!unreadNoti.iterator().hasNext()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        for (Notification noti: unreadNoti) {
+            noti.setIsRead(true);
+            notificationService.save(noti);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

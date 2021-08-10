@@ -2,25 +2,34 @@ package com.codegym.controller;
 
 import com.codegym.model.like.LikeStatus;
 import com.codegym.service.likeStatus.ILikeStatusService;
+import com.codegym.service.notification.INotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/likestatus")
 public class LikeStatusController {
     @Autowired
     private ILikeStatusService likeStatusService;
+
+    @Autowired
+    private INotificationService notificationService;
+
     @GetMapping("/{id}")
     public ResponseEntity<Iterable<LikeStatus>> showAllLikeStatus(@PathVariable Long id){
         return new ResponseEntity<>(likeStatusService.findAllByStatusId(id), HttpStatus.OK);
     }
+
     @PostMapping
-    public ResponseEntity<LikeStatus> createLikeStatus(@RequestBody LikeStatus likeStatus){
-        return new ResponseEntity<>(likeStatusService.save(likeStatus),HttpStatus.CREATED);
+    public ResponseEntity<LikeStatus> createLikeStatus(@RequestBody LikeStatus likeStatus) {
+        LikeStatus like = likeStatusService.save(likeStatus);
+        notificationService.saveLikeNotification(like);
+        return new ResponseEntity<>(like, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
