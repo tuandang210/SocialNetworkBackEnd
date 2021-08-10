@@ -94,26 +94,26 @@ public class NotificationController {
     }
 
 
-    // save like notification
-    @PostMapping("/like")
-    public ResponseEntity<?> saveLikeNoti (@RequestBody LikeStatus like) {
-        Account author = like.getStatus().getAccount();
-        Account liker = like.getAccount();
-        if (author.equals(liker)) {
-            return new ResponseEntity<>(new ResponseMessage("Should not receive notification about myself"), HttpStatus.BAD_REQUEST);
-        }
-
-        AccountRelation relation = accountRelationService.findByTwoAccountIds(author.getId(), liker.getId()).get();
-        if (!relation.getFriendStatus().getStatus().equals(EFriendStatus.FRIEND)) {
-            return new ResponseEntity<>(new ResponseMessage("Not friends"), HttpStatus.BAD_REQUEST);
-        }
-
-        Notification likeNoti = new Notification();
-        likeNoti.setAccount(author);
-        likeNoti.setLike(like);
-        likeNoti.setContent(liker.getUsername() + " đã thích bài viết của bạn");
-        return new ResponseEntity<>(notificationService.save(likeNoti), HttpStatus.CREATED);
-    }
+//    // save like notification
+//    @PostMapping("/like")
+//    public ResponseEntity<?> saveLikeNoti (@RequestBody LikeStatus like) {
+//        Account author = like.getStatus().getAccount();
+//        Account liker = like.getAccount();
+//        if (author.equals(liker)) {
+//            return new ResponseEntity<>(new ResponseMessage("Should not receive notification about myself"), HttpStatus.BAD_REQUEST);
+//        }
+//
+//        AccountRelation relation = accountRelationService.findByTwoAccountIds(author.getId(), liker.getId()).get();
+//        if (!relation.getFriendStatus().getStatus().equals(EFriendStatus.FRIEND)) {
+//            return new ResponseEntity<>(new ResponseMessage("Not friends"), HttpStatus.BAD_REQUEST);
+//        }
+//
+//        Notification likeNoti = new Notification();
+//        likeNoti.setAccount(author);
+//        likeNoti.setLike(like);
+//        likeNoti.setContent(liker.getUsername() + " đã thích bài viết của bạn");
+//        return new ResponseEntity<>(notificationService.save(likeNoti), HttpStatus.CREATED);
+//    }
 
 
     // save status notification

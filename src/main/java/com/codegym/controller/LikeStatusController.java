@@ -2,6 +2,7 @@ package com.codegym.controller;
 
 import com.codegym.model.like.LikeStatus;
 import com.codegym.service.likeStatus.ILikeStatusService;
+import com.codegym.service.notification.INotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,21 +16,29 @@ import java.util.Optional;
 public class LikeStatusController {
     @Autowired
     private ILikeStatusService likeStatusService;
+
+    @Autowired
+    private INotificationService notificationService;
+
     @GetMapping("/{id}")
-    public ResponseEntity<Iterable<LikeStatus>> showAllLikeStatus(@PathVariable Long id){
+    public ResponseEntity<Iterable<LikeStatus>> showAllLikeStatus(@PathVariable Long id) {
         return new ResponseEntity<>(likeStatusService.findAllByStatusIdAndIsLikeTrue(id), HttpStatus.OK);
     }
+
     @PostMapping
-    public ResponseEntity<LikeStatus> createLikeStatus(@RequestBody LikeStatus likeStatus){
-        return new ResponseEntity<>(likeStatusService.save(likeStatus),HttpStatus.CREATED);
+    public ResponseEntity<LikeStatus> createLikeStatus(@RequestBody LikeStatus likeStatus) {
+        LikeStatus like = likeStatusService.save(likeStatus);
+        notificationService.saveLikeNotification(like);
+        return new ResponseEntity<>(like, HttpStatus.CREATED);
     }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<LikeStatus> deleteLikeStatus(@PathVariable Long id){
-        Optional<LikeStatus> optionalLikeStatus=likeStatusService.findById(id);
-        if (!optionalLikeStatus.isPresent()){
+    public ResponseEntity<LikeStatus> deleteLikeStatus(@PathVariable Long id) {
+        Optional<LikeStatus> optionalLikeStatus = likeStatusService.findById(id);
+        if (!optionalLikeStatus.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         likeStatusService.delete(id);
-        return new ResponseEntity<>(optionalLikeStatus.get(),HttpStatus.OK);
+        return new ResponseEntity<>(optionalLikeStatus.get(), HttpStatus.OK);
     }
 }
