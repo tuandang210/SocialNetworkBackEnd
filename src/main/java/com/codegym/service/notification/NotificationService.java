@@ -204,15 +204,21 @@ public class NotificationService implements INotificationService{
     public void deleteStatusNotification(Status status) {
         Status receivedStatus = statusService.findById(status.getId()).get();
         Account author = receivedStatus.getAccount();
-        Iterable<Account> friends = accountRelationService.findAllByAccountIdAndStatus(author.getId(), EFriendStatus.FRIEND);
-        if (!friends.iterator().hasNext()) {
+//        Iterable<Account> friends = accountRelationService.findAllByAccountIdAndStatus(author.getId(), EFriendStatus.FRIEND);
+//        if (!friends.iterator().hasNext()) {
+//            return;
+//        }
+//        for (Account friend: friends) {
+//            Notification deletedStatusNoti= notificationRepository.findAllByAccount_IdAndStatus_Id(
+//                    friend.getId(), receivedStatus.getId()).get();
+//            notificationRepository.deleteById(deletedStatusNoti.getId());
+//        }
+        Iterable<Notification> relatedNotis = notificationRepository.findAllByStatus_Id(receivedStatus.getId());
+        if (!relatedNotis.iterator().hasNext()){
             return;
         }
-        for (Account friend: friends) {
-            Notification deletedStatusNoti= notificationRepository.findAllByAccount_IdAndStatus_Id(
-                    friend.getId(), receivedStatus.getId()).get();
-            notificationRepository.deleteById(deletedStatusNoti.getId());
+        for (Notification noti: relatedNotis) {
+            notificationRepository.deleteById(noti.getId());
         }
-
     }
 }

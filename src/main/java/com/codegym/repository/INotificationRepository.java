@@ -16,10 +16,12 @@ public interface INotificationRepository extends JpaRepository<Notification, Lon
 
     //tìm tất cả các noti của 1 người
     Iterable<Notification> findAllByAccount_IdOrderByCreateDateDesc(Long id);
-    
+
     Optional<Notification> findAllByAccount_IdAndLike_Id(Long accountId, Long likeId);
 
     Optional<Notification> findAllByAccount_IdAndComment_Id(Long accountId, Long commentId);
 
     Optional<Notification> findAllByAccount_IdAndStatus_Id(Long accountId, Long statusId);
+
+    Iterable<Notification> findAllByStatus_Id(Long statusId);
 }
