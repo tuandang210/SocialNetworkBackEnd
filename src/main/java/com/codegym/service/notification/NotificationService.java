@@ -9,13 +9,17 @@ import com.codegym.model.like.LikeStatus;
 import com.codegym.model.notification.Notification;
 import com.codegym.model.status.Status;
 import com.codegym.repository.INotificationRepository;
+import com.codegym.service.account.IAccountService;
 import com.codegym.service.accountRelation.IAccountRelationService;
+import com.codegym.service.status.IStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,6 +29,12 @@ public class NotificationService implements INotificationService{
 
     @Autowired
     private IAccountRelationService accountRelationService;
+
+    @Autowired
+    private IStatusService statusService;
+
+    @Autowired
+    private IAccountService accountService;
 
     @Override
     public Iterable<Notification> findAll() {
@@ -67,10 +77,13 @@ public class NotificationService implements INotificationService{
         return notificationRepository.findAllByAccount_IdOrderByCreateDateDesc(id);
     }
 
+
     @Override
     public Notification saveLikeNotification(LikeStatus like) {
-        Account author = like.getStatus().getAccount();
-        Account liker = like.getAccount();
+        Status status = statusService.findById(like.getStatus().getId()).get();
+
+        Account author = status.getAccount();
+        Account liker = accountService.findById(like.getAccount().getId()).get();
         if (author.equals(liker)) {
             return null;
         }
@@ -87,13 +100,49 @@ public class NotificationService implements INotificationService{
         return notificationRepository.save(likeNoti);
     }
 
+
     @Override
     public Notification saveCommentNotification(Comment comment) {
-        return null;
+        Status status = statusService.findById(comment.getStatus().getId()).get();
+        Account author = status.getAccount();
+        Account commenter = accountService.findById(comment.getAccount().getId()).get();
+        if (author.equals(commenter)) {
+            return null;
+        }
+
+        AccountRelation relation = accountRelationService.findByTwoAccountIds(author.getId(), commenter.getId()).get();
+        if (!relation.getFriendStatus().getStatus().equals(EFriendStatus.FRIEND)) {
+            return null;
+        }
+
+        Notification commentNoti = new Notification();
+        commentNoti.setAccount(author);
+        commentNoti.setComment(comment);
+        commentNoti.setContent(commenter.getUsername() + " đã bình luận về bài viết của bạn");
+        return notificationRepository.save(commentNoti);
     }
+
 
     @Override
     public Iterable<Notification> saveStatusNotification(Status status) {
-        return null;
+        Status savedStatus = statusService.findById(status.getId()).get();
+        if (status.getPrivacy().getName().equals("only-me")){
+            return null;
+        }
+
+        Account author = savedStatus.getAccount();
+        Iterable<Account> friends = accountRelationService.findAllByAccountIdAndStatus(author.getId(), EFriendStatus.FRIEND);
+        if (!friends.iterator().hasNext()) {
+            return null;
+        }
+        List<Notification> notiList = new ArrayList<>();
+        for (Account friend: friends) {
+            Notification statusNoti = new Notification();
+            statusNoti.setAccount(friend);
+            statusNoti.setStatus(savedStatus);
+            statusNoti.setContent(author.getUsername() + " đã đăng một bài viết mới");
+            notiList.add(notificationRepository.save(statusNoti));
+        }
+        return notiList;
     }
 }
