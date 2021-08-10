@@ -50,6 +50,8 @@ public class CommentController {
         if (!commentOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
+        notificationService.deleteCommentNotification(commentOptional.get());
         commentService.delete(id);
         return new ResponseEntity<>(commentOptional.get(), HttpStatus.NO_CONTENT);
     }

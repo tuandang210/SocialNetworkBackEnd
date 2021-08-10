@@ -81,6 +81,8 @@ public class StatusController {
         if (!statusOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        notificationService.deleteStatusNotification(statusOptional.get());
+
         statusService.delete(id);
         return new ResponseEntity<>(statusOptional.get(), HttpStatus.NO_CONTENT);
     }
