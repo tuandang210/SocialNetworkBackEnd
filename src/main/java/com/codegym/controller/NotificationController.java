@@ -142,4 +142,47 @@ public class NotificationController {
         statusNoti.setContent(author.getUsername() + " đã đăng một bài viết mới");
         return new ResponseEntity<>(notificationService.save(statusNoti), HttpStatus.CREATED);
     }
+
+    // đánh dấu chưa đọc
+    @PutMapping("/unread/{id}")
+    public ResponseEntity<?> markAsUnread (@PathVariable("id") Long id) {
+        Notification noti = notificationService.findById(id).get();
+        if (noti == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (noti.getIsRead() == false){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        noti.setIsRead(false);
+        return new ResponseEntity<>(notificationService.save(noti), HttpStatus.OK);
+    }
+
+    // đánh dấu đã đọc
+    @PutMapping("/read/{id}")
+    public ResponseEntity<?> markAsRead (@PathVariable("id") Long id) {
+        Notification noti = notificationService.findById(id).get();
+        if (noti == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (noti.getIsRead() == true){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        noti.setIsRead(true);
+        return new ResponseEntity<>(notificationService.save(noti), HttpStatus.OK);
+    }
+
+
+    // đánh dấu đã đọc tất cả
+    @PutMapping("/read/all")
+    public ResponseEntity<?> markAllAsRead(@PathVariable("id") Long id) {
+        Iterable<Notification> unreadNoti = notificationService.findAllUnreadByAccountId(id);
+        if (!unreadNoti.iterator().hasNext()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        for (Notification noti: unreadNoti) {
+            noti.setIsRead(true);
+            notificationService.save(noti);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
