@@ -103,6 +103,7 @@ public class NotificationService implements INotificationService{
 
         Notification likeNoti = new Notification();
         likeNoti.setAccount(author);
+        likeNoti.setStatus(status);
         likeNoti.setLike(like);
         likeNoti.setContent(liker.getUsername() + " đã thích bài viết của bạn");
         return notificationRepository.save(likeNoti);
@@ -126,6 +127,7 @@ public class NotificationService implements INotificationService{
         Notification commentNoti = new Notification();
         commentNoti.setAccount(author);
         commentNoti.setComment(comment);
+        commentNoti.setStatus(status);
         commentNoti.setContent(commenter.getUsername() + " đã bình luận về bài viết của bạn");
         return notificationRepository.save(commentNoti);
     }
@@ -134,11 +136,11 @@ public class NotificationService implements INotificationService{
     @Override
     public Iterable<Notification> saveStatusNotification(Status status) {
         Status savedStatus = statusService.findById(status.getId()).get();
-        if (status.getPrivacy().getId().equals(3)){
+        if (status.getPrivacy().getId().equals(2)){
             return null;
         }
 
-        Account author = savedStatus.getAccount();
+        Account author = accountService.findById(savedStatus.getAccount().getId()).get();
         Iterable<Account> friends = accountRelationService.findAllByAccountIdAndStatus(author.getId(), EFriendStatus.FRIEND);
         if (!friends.iterator().hasNext()) {
             return null;
@@ -172,6 +174,9 @@ public class NotificationService implements INotificationService{
     @Override
     public void deleteLikeNotification(LikeStatus like) {
         LikeStatus receivedLike = likeStatusService.findById(like.getId()).get();
+        if (receivedLike.getAccount().equals(receivedLike.getStatus().getAccount())){
+            return;
+        }
         Notification deletedNoti = notificationRepository.findAllByAccount_IdAndLike_Id(
                 receivedLike.getStatus().getAccount().getId()
                 , receivedLike.getId()).get();
@@ -183,6 +188,10 @@ public class NotificationService implements INotificationService{
     @Override
     public void deleteCommentNotification(Comment comment) {
         Comment receivedComment = commentService.findById(comment.getId()).get();
+        if (receivedComment.getAccount().equals(receivedComment.getStatus().getAccount())) {
+            return;
+        }
+
         Notification deletedCommentNoti = notificationRepository.findAllByAccount_IdAndComment_Id(
                 receivedComment.getStatus().getAccount().getId()
                 , receivedComment.getId()).get();
