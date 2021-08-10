@@ -12,8 +12,14 @@ import org.springframework.web.bind.annotation.*;
 public class ProfileController {
     @Autowired
     private IAccountService accountService;
+
     @GetMapping
     public ResponseEntity<?> getAccount(@RequestParam String username){
         return new ResponseEntity<>(accountService.findByUsername(username), HttpStatus.OK);
+    }
+
+    @GetMapping("/containing")
+    public ResponseEntity<?> findAccountsByUsernameContaining(@RequestParam String username){
+        return new ResponseEntity<>(accountService.findAccountsByUsernameContaining(username), HttpStatus.OK);
     }
 }
