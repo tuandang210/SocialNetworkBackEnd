@@ -48,6 +48,7 @@ public class LikeStatusController {
         if (!optionalLikeStatus.isPresent()){
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+        notificationService.deleteLikeNotification(optionalLikeStatus.get());
         likeStatusService.delete(optionalLikeStatus.get().getId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

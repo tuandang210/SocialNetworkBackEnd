@@ -94,69 +94,6 @@ public class NotificationController {
     }
 
 
-//    // save like notification
-//    @PostMapping("/like")
-//    public ResponseEntity<?> saveLikeNoti (@RequestBody LikeStatus like) {
-//        Account author = like.getStatus().getAccount();
-//        Account liker = like.getAccount();
-//        if (author.equals(liker)) {
-//            return new ResponseEntity<>(new ResponseMessage("Should not receive notification about myself"), HttpStatus.BAD_REQUEST);
-//        }
-//
-//        AccountRelation relation = accountRelationService.findByTwoAccountIds(author.getId(), liker.getId()).get();
-//        if (!relation.getFriendStatus().getStatus().equals(EFriendStatus.FRIEND)) {
-//            return new ResponseEntity<>(new ResponseMessage("Not friends"), HttpStatus.BAD_REQUEST);
-//        }
-//
-//        Notification likeNoti = new Notification();
-//        likeNoti.setAccount(author);
-//        likeNoti.setLike(like);
-//        likeNoti.setContent(liker.getUsername() + " đã thích bài viết của bạn");
-//        return new ResponseEntity<>(notificationService.save(likeNoti), HttpStatus.CREATED);
-//    }
-
-
-    // save status notification
-    @PostMapping("/status/{id}")
-    public ResponseEntity<?> saveStatusNoti (@RequestBody Status status,
-                                             @PathVariable("id") Long id) {
-        Account author = status.getAccount();
-        if (!accountService.existsAccountById(id)) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        if (author.getId() == id) {
-            return new ResponseEntity<>(new ResponseMessage("Should not receive notification about myself"), HttpStatus.BAD_REQUEST);
-        }
-
-        AccountRelation relation = accountRelationService.findByTwoAccountIds(author.getId(), id).get();
-        if (!relation.getFriendStatus().getStatus().equals(EFriendStatus.FRIEND)) {
-            return new ResponseEntity<>(new ResponseMessage("Not friends"), HttpStatus.BAD_REQUEST);
-        }
-        if (status.getPrivacy().getName().equals("only-me")) {
-            return new ResponseEntity<>(new ResponseMessage("Private status"), HttpStatus.BAD_REQUEST);
-        }
-
-        Notification statusNoti = new Notification();
-        statusNoti.setAccount(accountService.findById(id).get());
-        statusNoti.setStatus(status);
-        statusNoti.setContent(author.getUsername() + " đã đăng một bài viết mới");
-        return new ResponseEntity<>(notificationService.save(statusNoti), HttpStatus.CREATED);
-    }
-
-    // đánh dấu chưa đọc
-    @PutMapping("/unread/{id}")
-    public ResponseEntity<?> markAsUnread (@PathVariable("id") Long id) {
-        Notification noti = notificationService.findById(id).get();
-        if (noti == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        if (noti.getIsRead() == false){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        noti.setIsRead(false);
-        return new ResponseEntity<>(notificationService.save(noti), HttpStatus.OK);
-    }
-
     // đánh dấu đã đọc
     @PutMapping("/read/{id}")
     public ResponseEntity<?> markAsRead (@PathVariable("id") Long id) {
