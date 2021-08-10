@@ -72,27 +72,19 @@ public class NotificationController {
     }
 
 
-    // save comment notification
-    @PostMapping("/comment")
-    public ResponseEntity<?> saveCommentNoti (@RequestBody Comment comment) {
-        Account author = comment.getStatus().getAccount();
-        Account commenter = comment.getAccount();
-        if (author.equals(commenter)) {
-            return new ResponseEntity<>(new ResponseMessage("Should not receive notification about myself"), HttpStatus.BAD_REQUEST);
+    // đánh dấu chưa đọc
+    @PutMapping("unread/{id}")
+    public ResponseEntity<?> markAsUnread (@PathVariable("id") Long id) {
+        Notification noti = notificationService.findById(id).get();
+        if (noti == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-        AccountRelation relation = accountRelationService.findByTwoAccountIds(author.getId(), commenter.getId()).get();
-        if (!relation.getFriendStatus().getStatus().equals(EFriendStatus.FRIEND)) {
-            return new ResponseEntity<>(new ResponseMessage("Not friends"), HttpStatus.BAD_REQUEST);
+        if (noti.getIsRead() == false){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-        Notification commentNoti = new Notification();
-        commentNoti.setAccount(author);
-        commentNoti.setComment(comment);
-        commentNoti.setContent(commenter.getUsername() + " đã bình luận về bài viết của bạn");
-        return new ResponseEntity<>(notificationService.save(commentNoti), HttpStatus.CREATED);
+        noti.setIsRead(false);
+        return new ResponseEntity<>(notificationService.save(noti), HttpStatus.OK);
     }
-
 
     // đánh dấu đã đọc
     @PutMapping("/read/{id}")
@@ -110,7 +102,7 @@ public class NotificationController {
 
 
     // đánh dấu đã đọc tất cả
-    @PutMapping("/read/all")
+    @PutMapping("/read/all/{id}")
     public ResponseEntity<?> markAllAsRead(@PathVariable("id") Long id) {
         Iterable<Notification> unreadNoti = notificationService.findAllUnreadByAccountId(id);
         if (!unreadNoti.iterator().hasNext()) {
