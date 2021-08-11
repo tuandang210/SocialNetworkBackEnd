@@ -44,11 +44,12 @@ public class StatusController {
     @GetMapping("/page/{pageId}")
     public ResponseEntity<?> getAllStatusByPageId(@PathVariable Long pageId, @RequestParam int size) {
         Iterable<Status> statuses = statusService.findAllByPageId(pageId, size);
-        List<StatusDto> statusDTOs = new ArrayList<>();
+        List<StatusDTO> statusDTOs = new ArrayList<>();
         for (Status x : statuses) {
             List<LikeStatus> likeStatuses = (List<LikeStatus>) likeStatusService.findAllByStatusId(x.getId());
             StatusDTO statusDTO = new StatusDTO(x.getId(), x.getContent(), x.getAccount(), x.getPrivacy(),
                     x.getImageStatuses(), x.getTime(), x.getPage(), likeStatuses);
+            statusDTOs.add(statusDTO);
         }
         return new ResponseEntity<>(statusDTOs, HttpStatus.OK);
     }
@@ -67,6 +68,9 @@ public class StatusController {
         imageStatus.setUrl(statusDto.getUrl());
         imageService.save(imageStatus);
         Status status = new Status();
+        if (statusDto.getPage() != null){
+            status.setPage(statusDto.getPage());
+        }
         Set<ImageStatus> imageStatusSet = new HashSet<>();
         imageStatusSet.add(imageService.findByUrl(statusDto.getUrl()).get());
         status.setContent(statusDto.getContent());
