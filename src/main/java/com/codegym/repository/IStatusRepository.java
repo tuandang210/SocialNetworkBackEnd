@@ -16,4 +16,7 @@ public interface IStatusRepository extends JpaRepository<Status, Long> {
     Iterable<Status> findAllByAccountIdOrderByPostedTimeDesc(Long id);
 
     Page<Status> findAllByAccountIdOrderByPostedTimeDesc(Long id, Pageable pageable);
+
+    Page<Status> findAllByPageId(Long pageId, Pageable pageable);
+    Iterable<Status> findAllByPageId(Long pageId);
 }

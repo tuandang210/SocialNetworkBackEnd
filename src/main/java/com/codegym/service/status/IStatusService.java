@@ -29,4 +29,7 @@ public interface IStatusService extends IGeneralService<Status> {
     Iterable<Status> findAllNonPrivateStatusByMySelfPagination(Long id, Long pageSize);
     // Tìm tất cả bài đăng của 1 cá nhân
     Page<Status> findAllByAccountIdPagination(Long id, Long pageSize);
+
+    Iterable<Status> findAllByPageId(Long pageId,int size);
+    Iterable<Status> findAllByPageId(Long pageId);
 }
