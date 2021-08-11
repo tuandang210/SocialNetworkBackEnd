@@ -136,7 +136,7 @@ public class NotificationService implements INotificationService{
     @Override
     public Iterable<Notification> saveStatusNotification(Status status) {
         Status savedStatus = statusService.findById(status.getId()).get();
-        if (status.getPrivacy().getId().equals(2)){
+        if (status.getPrivacy().getId() == 3){
             return null;
         }
 

@@ -73,7 +73,7 @@ public class NotificationController {
 
 
     // đánh dấu chưa đọc
-    @PutMapping("unread/{id}")
+    @GetMapping("unread/{id}")
     public ResponseEntity<?> markAsUnread (@PathVariable("id") Long id) {
         Optional<Notification> notificationOptional = notificationService.findById(id);
         if (!notificationOptional.isPresent()) {
@@ -88,7 +88,7 @@ public class NotificationController {
     }
 
     // đánh dấu đã đọc
-    @PutMapping("/read/{id}")
+    @GetMapping("/read/{id}")
     public ResponseEntity<?> markAsRead (@PathVariable("id") Long id) {
         Optional<Notification> notificationOptional = notificationService.findById(id);
         if (!notificationOptional.isPresent()) {
@@ -104,7 +104,7 @@ public class NotificationController {
 
 
     // đánh dấu đã đọc tất cả
-    @PutMapping("/readAll/{id}")
+    @GetMapping("/readAll/{id}")
     public ResponseEntity<?> markAllAsRead(@PathVariable("id") Long id) {
         Iterable<Notification> unreadNoti = notificationService.findAllUnreadByAccountId(id);
         if (!unreadNoti.iterator().hasNext()) {
@@ -114,6 +114,6 @@ public class NotificationController {
             noti.setIsRead(true);
             notificationService.save(noti);
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(unreadNoti, HttpStatus.OK);
     }
 }
