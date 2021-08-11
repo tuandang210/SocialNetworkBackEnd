@@ -23,5 +23,5 @@ public class StatusDto {
 
     private Privacy privacy;
 
-    private String url;
+    private String imageStatuses;
 }

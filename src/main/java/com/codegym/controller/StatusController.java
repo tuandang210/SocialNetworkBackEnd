@@ -50,11 +50,11 @@ public class StatusController {
     @PostMapping
     public ResponseEntity<Status> createStatus(@RequestBody StatusDto statusDto) {
         ImageStatus imageStatus = new ImageStatus();
-        imageStatus.setUrl(statusDto.getUrl());
-        imageService.save(imageStatus);
+        imageStatus.setUrl(statusDto.getImageStatuses());
+//        imageService.save(imageStatus);
         Status status = new Status();
         Set<ImageStatus> imageStatusSet = new HashSet<>();
-        imageStatusSet.add(imageService.findByUrl(statusDto.getUrl()).get());
+        imageStatusSet.add(imageService.findByUrl(statusDto.getImageStatuses()).get());
         status.setContent(statusDto.getContent());
         status.setAccount(statusDto.getAccount());
         status.setPrivacy(statusDto.getPrivacy());
@@ -66,12 +66,26 @@ public class StatusController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Status> editStatus(@RequestBody Status status, @PathVariable Long id) {
+    public ResponseEntity<Status> editStatus(@RequestBody StatusDto statusDto, @PathVariable Long id) {
         Optional<Status> statusOptional = statusService.findById(id);
+//        imageService.save(new ImageStatus(statusDto.getImageStatuses()));
+        Optional<ImageStatus> imageStatus = imageService.findByUrl(statusDto.getImageStatuses());
+        Set<ImageStatus> imageStatusSet = new HashSet<>();
+        ImageStatus imageStatus1 = new ImageStatus();
+        imageStatus1.setId(imageStatus.get().getId());
+        imageStatusSet.add(imageStatus1);
         if (!statusOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        status.setId(statusOptional.get().getId());
+        Status status = new Status();
+        status.setId(id);
+        status.setAccount(statusDto.getAccount());
+        status.setImageStatuses(imageStatusSet);
+        status.setPostedTime(statusOptional.get().getPostedTime());
+        status.setPrivacy(statusOptional.get().getPrivacy());
+        status.setTime(statusOptional.get().getTime());
+        status.setContent(statusDto.getContent());
+
         return new ResponseEntity<>(statusService.save(status), HttpStatus.OK);
     }
 
@@ -112,7 +126,7 @@ public class StatusController {
     // API cho bảng tin của cá nhân
     @GetMapping("/newsfeed/{id}")
     public ResponseEntity<?> getNewsFeed(@PathVariable("id") Long id,
-                                                        @RequestParam("size") Long size) {
+                                         @RequestParam("size") Long size) {
         List<Status> newsFeed = (List<Status>) statusService.findAllStatusInNewsFeedPagination(id, size);
         List<StatusDtoComment> statusDtoCommentList = new ArrayList<>();
         for (Status x : newsFeed) {
