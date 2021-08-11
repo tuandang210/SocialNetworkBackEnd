@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -39,7 +41,9 @@ public class CommentService implements ICommentService {
 
     @Override
     public Iterable<Comment> findAllByStatusId(Long id) {
-        return commentRepository.findAllByStatusId(id);
+        Iterable<Comment> comments =  commentRepository.findAllByStatusId(id);
+        getHoursPage1(comments);
+        return comments;
     }
 
     @Override
@@ -53,6 +57,14 @@ public class CommentService implements ICommentService {
 
     public Page<Comment> getHoursPage(Page<Comment> comments) {
         for (Comment x : comments.getContent()) {
+            Long date = (new Date().getTime() - x.getDate().getTime()) / 1000 / 60;
+            x.setTime(date + "");
+        }
+        return comments;
+    }
+
+    public Iterable<Comment> getHoursPage1(Iterable<Comment> comments) {
+        for (Comment x : comments) {
             Long date = (new Date().getTime() - x.getDate().getTime()) / 1000 / 60;
             x.setTime(date + "");
         }

@@ -118,7 +118,7 @@ public class StatusController {
         for (Status x : newsFeed) {
             StatusDtoComment statusDtoComment = new StatusDtoComment();
             Page<Comment> commentList;
-            commentList = commentService.findAllByStatusIdPagination(x.getId(), size);
+            commentList = commentService.findAllByStatusIdPagination(x.getId(), 3L);
             List<LikeStatus> likeStatuses;
             likeStatuses = (List<LikeStatus>) likeStatusService.findAllByStatusId(x.getId());
             statusDtoComment.setLikeStatuses(likeStatuses);
