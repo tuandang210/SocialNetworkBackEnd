@@ -11,5 +11,5 @@ public interface ICommentService extends IGeneralService<Comment> {
 
     Page<Comment> findAllByStatusIdPagination(Long id, Long pageSize);
 
-
+    Iterable<Comment> findAllByStatus_IdOrderByDateDesc(Long id);
 }

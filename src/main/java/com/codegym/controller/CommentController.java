@@ -23,7 +23,7 @@ public class CommentController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Iterable<Comment>> showAllComment(@PathVariable Long id) {
-        return new ResponseEntity<>(commentService.findAllByStatusId(id), HttpStatus.OK);
+        return new ResponseEntity<>(commentService.findAllByStatus_IdOrderByDateDesc(id), HttpStatus.OK);
     }
 
     @PostMapping

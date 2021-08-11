@@ -54,6 +54,13 @@ public class CommentService implements ICommentService {
         return page;
     }
 
+    @Override
+    public Iterable<Comment> findAllByStatus_IdOrderByDateDesc(Long id) {
+        Iterable<Comment> comments =  commentRepository.findAllByStatus_IdOrderByDateDesc(id);
+        getHoursPage1(comments);
+        return comments;
+    }
+
 
     public Page<Comment> getHoursPage(Page<Comment> comments) {
         for (Comment x : comments.getContent()) {
