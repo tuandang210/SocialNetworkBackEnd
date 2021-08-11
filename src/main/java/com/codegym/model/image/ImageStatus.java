@@ -9,13 +9,23 @@ import java.util.Objects;
 
 @Entity
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class ImageStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String url;
+
+    public ImageStatus(Long id, String url) {
+        this.id = id;
+        this.url = url;
+    }
+
+    public ImageStatus() {
+    }
+
+    public ImageStatus(String imageStatuses) {
+        this.url = imageStatuses;
+    }
 
     @Override
     public boolean equals(Object o) {

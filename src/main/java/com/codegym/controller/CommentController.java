@@ -40,7 +40,9 @@ public class CommentController {
         if (!commentOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        comment.setId(commentOptional.get().getId());
+        comment.setStatus(commentOptional.get().getStatus());
+        comment.setAccount(commentOptional.get().getAccount());
+        comment.setId(id);
         return new ResponseEntity<>(commentService.save(comment), HttpStatus.OK);
     }
 

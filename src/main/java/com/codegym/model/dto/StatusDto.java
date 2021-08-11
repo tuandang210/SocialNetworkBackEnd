@@ -5,7 +5,7 @@ import com.codegym.model.account.Privacy;
 import com.codegym.model.comment.Comment;
 import com.codegym.model.like.LikeStatus;
 import com.codegym.model.page.Page;
-import lombok.AllArgsConstructor;
+    import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -24,8 +24,8 @@ public class StatusDto {
 
     private Privacy privacy;
 
-    private String url;
+    private String imageStatuses;
 
     private Page page;
-    
+
 }
