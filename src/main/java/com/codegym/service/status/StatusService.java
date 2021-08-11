@@ -173,6 +173,18 @@ public class StatusService implements IStatusService {
         return page;
     }
 
+    @Override
+    public Iterable<Status> findAllByPageId(Long pageId, int size) {
+        PageRequest pageRequest = PageRequest.of(0, size);
+
+        return statusRepository.findAllByPageId(pageId, pageRequest).getContent();
+    }
+
+    @Override
+    public Iterable<Status> findAllByPageId(Long pageId) {
+        return statusRepository.findAllByPageId(pageId);
+    }
+
     public Iterable<Status> getHours(Iterable<Status> statuses) {
         for (Status x : statuses) {
             Long date = (new Date().getTime() - x.getPostedTime().getTime()) / 1000 / 60;

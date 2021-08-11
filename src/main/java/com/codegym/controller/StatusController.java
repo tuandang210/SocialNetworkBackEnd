@@ -1,11 +1,14 @@
 package com.codegym.controller;
 
+import com.codegym.model.account.Account;
+import com.codegym.model.account.Privacy;
 import com.codegym.model.comment.Comment;
 import com.codegym.model.dto.StatusDto;
 import com.codegym.model.dto.StatusDtoComment;
 import com.codegym.model.image.ImageStatus;
 import com.codegym.model.like.LikeStatus;
 import com.codegym.model.status.Status;
+import com.codegym.model.status.dto.StatusDTO;
 import com.codegym.service.comment.ICommentService;
 import com.codegym.service.imageStatus.IStatusImageService;
 import com.codegym.service.likeStatus.ILikeStatusService;
@@ -38,6 +41,18 @@ public class StatusController {
     @Autowired
     private INotificationService notificationService;
 
+    @GetMapping("/page/{pageId}")
+    public ResponseEntity<?> getAllStatusByPageId(@PathVariable Long pageId, @RequestParam int size) {
+        Iterable<Status> statuses = statusService.findAllByPageId(pageId, size);
+        List<StatusDto> statusDTOs = new ArrayList<>();
+        for (Status x : statuses) {
+            List<LikeStatus> likeStatuses = (List<LikeStatus>) likeStatusService.findAllByStatusId(x.getId());
+            StatusDTO statusDTO = new StatusDTO(x.getId(), x.getContent(), x.getAccount(), x.getPrivacy(),
+                    x.getImageStatuses(), x.getTime(), x.getPage(), likeStatuses);
+        }
+        return new ResponseEntity<>(statusDTOs, HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Status> findByIdStatus(@PathVariable Long id) {
         Optional<Status> statusOptional = statusService.findById(id);
@@ -46,7 +61,6 @@ public class StatusController {
         }
         return new ResponseEntity<>(statusOptional.get(), HttpStatus.OK);
     }
-
     @PostMapping
     public ResponseEntity<Status> createStatus(@RequestBody StatusDto statusDto) {
         ImageStatus imageStatus = new ImageStatus();
@@ -110,7 +124,7 @@ public class StatusController {
     // API cho bảng tin của cá nhân
     @GetMapping("/newsfeed/{id}")
     public ResponseEntity<?> getNewsFeed(@PathVariable("id") Long id,
-                                                        @RequestParam("size") Long size) {
+                                         @RequestParam("size") Long size) {
         List<Status> newsFeed = (List<Status>) statusService.findAllStatusInNewsFeedPagination(id, size);
         List<StatusDtoComment> statusDtoCommentList = new ArrayList<>();
         for (Status x : newsFeed) {

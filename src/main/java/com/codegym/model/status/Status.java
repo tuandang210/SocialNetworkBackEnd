@@ -3,6 +3,7 @@ package com.codegym.model.status;
 import com.codegym.model.account.Account;
 import com.codegym.model.account.Privacy;
 import com.codegym.model.image.ImageStatus;
+import com.codegym.model.page.Page;
 import lombok.*;
 
 import javax.persistence.*;
@@ -32,4 +33,7 @@ public class Status {
     private Date postedTime = new Date();
 
     private String time;
+
+    @ManyToOne
+    private Page page;
 }
