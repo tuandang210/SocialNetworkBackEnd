@@ -81,6 +81,7 @@ public class StatusController {
         Status saved = statusService.save(status);
         notificationService.saveStatusNotification(saved);
         return new ResponseEntity<>(saved, HttpStatus.OK);
+
     }
 
     @PutMapping("/{id}")
@@ -173,4 +174,5 @@ public class StatusController {
                                                                  @RequestParam Long size) {
         return new ResponseEntity<>(statusService.findAllByAccountIdPagination(id, size), HttpStatus.OK);
     }
+    //s
 }
